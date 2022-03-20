@@ -16,7 +16,7 @@ def u_check(version, proxy_address = ""):
             "http":None,
             "https":None,
         }
-    url = "http://mocha-api.xyz/update/yande_re_downloader/?v=%s" % version # 更新接口
+    url = "http://mocha.cf/update/yande_re_downloader/?v=%s" % version # 更新接口
     urllib3.disable_warnings() # 关闭提示
     response = get(url, proxies = proxy, verify = False) # 发送GET请求，不验证ssl证书
     response.encoding = response.apparent_encoding # 防止中文乱码
