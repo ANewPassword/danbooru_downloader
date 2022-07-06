@@ -219,6 +219,10 @@ python3 main.py -m file -o make-config "--file-config-path" "./cfg.json"
 
 ## 常见问题
 
+### ModuleNotFoundError: No module named 'xxxxxx'
+
+使用`pip install`命令下载对应的库即可。
+
 ---
 
 ## 更新日志
