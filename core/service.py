@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from email.policy import default
 from func.http import yande_get_list
 from func.json import json_decode, json_encode_with_format
 from func.download import download, start_download
