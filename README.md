@@ -102,29 +102,11 @@ python3 main.py -m page -s 1 -e -1
 
 含义：根据`页面ID`下载，从`1`下载到`最后一页`（下载所在位置大于等于第`1`页的图片，即`全部下载`）。
 
-#### `update`模式
-
-##### 示例九
-
-```shell
-python3 main.py -m update
-```
-
-含义：更新脚本。
-
-##### 示例十
-
-```shell
-python3 main.py -m update -p "./downloader" -P "http://username:password@127.0.0.1:8080"
-```
-
-含义：更新脚本，日志保存到当前目录下名为`downloader`的目录（如不存在则自动创建），使用 HTTP 代理：`http://username:password@127.0.0.1:8080`。
-
 #### `file`模式
 
 **配置文件的`键`（`key`）均需使用`长命令`，且`-`应被替换为`_`。当指定为`file`模式时，配置文件的优先级最高。当配置文件内未提供参数的值或值为空字符串时，使用命令行传入的参数的值，如果命令行仍未指定，使用默认值。**
 
-##### 示例十一
+##### 示例九
 
 ```shell
 python3 main.py -m file "--file-config-path" "./config.json"
@@ -144,8 +126,8 @@ python3 main.py -m file "--file-config-path" "./config.json"
 		"path": "./downloader",
 		"proxy": "http://username:password@127.0.0.1:8080",
 		"options": "chksums",
-        "file_config_path": "",
-        "retry_max": "20"
+        	"file_config_path": "",
+        	"retry_max": "20"
     }
 }
 ```
@@ -154,7 +136,7 @@ python3 main.py -m file "--file-config-path" "./config.json"
 
 配置文件含义：根据`页面ID`下载，下载所在位置大于等于第`1`页且小于等于第`5`页的图片，下载后校验文件完整性，每次获取`5`个帖子（图片），只获取标签中包含`["angel", "tail"]`且不包含`["tagme", "ass"]`的帖子，`5`线程下载，下载到当前目录下名为`downloader`的目录（如不存在则自动创建），使用 HTTP 代理：`http://username:password@127.0.0.1:8080`，超时重试`20`次。
 
-##### 示例十二
+##### 示例十
 
 ```shell
 python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -l 100 -o "chksums" -e 100
@@ -174,13 +156,31 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -l 100
 		"proxy": "http://username:password@127.0.0.1:8080",
 		"options": "",
 		"file_config_path": "",
-        "retry_max": ""
+        	"retry_max": ""
 }
 ```
 
 含义：以配置文件中的配置运行，下载到到当前目录下名为`yande`的目录（如不存在则自动创建），每次获取`100`个帖子（图片），下载后校验文件完整性，**但指定的`结束ID`将不会生效**。
 
 配置文件含义：根据`页面ID`下载，下载所在位置大于等于第`1`页且小于等于第`5`页的图片，只获取标签中包含`["angel", "tail"]`且不包含`["tagme", "ass"]`的帖子，`5`线程下载，使用 HTTP 代理：`http://username:password@127.0.0.1:8080`。
+
+#### `update`模式
+
+##### 示例十一
+
+```shell
+python3 main.py -m update
+```
+
+含义：更新脚本。
+
+##### 示例十二
+
+```shell
+python3 main.py -m update -p "./downloader" -P "http://username:password@127.0.0.1:8080"
+```
+
+含义：更新脚本，日志保存到当前目录下名为`downloader`的目录（如不存在则自动创建），使用 HTTP 代理：`http://username:password@127.0.0.1:8080`。
 
 #### 其他参数
 
