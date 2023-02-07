@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 # 全局常量
-VERSION = "V1.5.1"
+VERSION = "V1.5.2"
 AUTHOR = "MoCha"
-LAST_REVISE_TIME = "2022-07-04 15:53:09"
+LAST_REVISE_TIME = "2023-02-07 13:42:33"
 
 # 部分参数取值范围
 allow_mode = ["id", "page", "file", "update", "copyright"]
@@ -42,4 +42,4 @@ path_help = "文件保存路径"
 proxy_help = "http代理地址\r\n格式：http://用户名:密码@IP:端口"
 options_help = "附加操作，使用“+”连接多个参数\r\nchksums：下载后进行文件完整性校验\r\nmake-config：生成一个空白的配置文件，此时file-config-path将视为配置文件生成路径"
 file_config_path_help = "配置文件路径，只在运行模式为file时生效"
-retry_max_help = "最大重试次数\r\n-1表示重试直到下载成功"
+retry_max_help = "最大网络请求重试次数\r\n-1表示重试直到下载成功"

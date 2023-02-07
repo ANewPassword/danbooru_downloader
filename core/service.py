@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from func.http import yande_get_list
 from func.json import json_decode, json_encode_with_format
 from func.download import download, start_download
@@ -56,7 +57,7 @@ class service():
             else:
                 try:
                     file_cfg = json_decode(file_read(self.file_config_path))['args']
-                    self.mode = file_cfg['mode'] if 'mode' in file_cfg else "" # mode参数在有误的情况下赋原值会造成错误
+                    self.mode = file_cfg['mode'] if 'mode' in file_cfg else "" # mode参数在有误的情况下赋原值会造成错误，因为原值通常都是file
                     self.start = int(file_cfg['start']) if 'start' in file_cfg and file_cfg['start'] not in self.null_list else self.start
                     self.end = int(file_cfg['end']) if 'end' in file_cfg and file_cfg['end'] not in self.null_list else self.end
                     self.limit = int(file_cfg['limit']) if 'limit' in file_cfg and file_cfg['limit'] not in self.null_list else self.limit
@@ -158,7 +159,7 @@ class service():
             page_count = self.start # 初始化页码计数器
             while True:
                 add_log("正在获取第 %s 页" % page_count, 'Info')
-                requests = yande_get_list(page_count, self.limit, self.tags, self.proxy)
+                requests = yande_get_list(self.retry_max, page_count, self.limit, self.tags, self.proxy)
                 if requests == "[]": # 判断是否已无图片可供下载
                     add_log("已无图片可供下载", 'Warn')
                     break
@@ -173,7 +174,7 @@ class service():
             add_log("下载部分页码，从第 %s 页下载到第 %s 页，每页 %s 项" % (self.start, self.end, self.limit), 'Info')
             for i in range(self.start, self.end + 1):
                 add_log("正在获取第 %s 页" % i, 'Info')
-                requests = yande_get_list(i, self.limit, self.tags, self.proxy)
+                requests = yande_get_list(self.retry_max, i, self.limit, self.tags, self.proxy)
                 if requests == "[]":
                     add_log("已无图片可供下载", 'Warn')
                     break
@@ -194,7 +195,7 @@ class service():
                 if end_point == True: # 当标记为true则退出循环
                     break
                 add_log("正在获取第 %s 页" % page_count, 'Info')
-                requests = yande_get_list(page_count, 1000, self.tags, self.proxy)
+                requests = yande_get_list(self.retry_max, page_count, 1000, self.tags, self.proxy)
                 if requests == "[]":
                     add_log("已无图片可供下载", 'Warn')
                     break
@@ -225,7 +226,7 @@ class service():
                 echo_id = self.end if loop_count == 1 else page_end_id
                 add_log("正在获取图片ID%s %s 的图片列表" % (echo_comparator, echo_id), 'Info')
                 id_tag = "id:<" + str(self.end + 1) if loop_count == 1 else "id:<" + str(page_end_id)
-                requests = yande_get_list(1, 1000, id_tag + "+" + self.tags, self.proxy)
+                requests = yande_get_list(self.retry_max, 1, 1000, id_tag + "+" + self.tags, self.proxy)
                 if requests == "[]":
                     add_log("已无图片可供下载", 'Warn')
                     break
