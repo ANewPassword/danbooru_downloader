@@ -60,6 +60,7 @@ class download(threading.Thread):
                             _exit(1)
                         else:
                             add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn')
+                            sleep(1)
                 err_count = 0
                 while res.status_code != 200 and (err_count < self.retry_max or self.retry_max == -1): # 下载失败且失败次数不大于指定次数则重新下载
                     err_count += 1
@@ -76,6 +77,7 @@ class download(threading.Thread):
                                 _exit(1)
                             else:
                                 add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn')
+                                sleep(1)
                 else:
                     if res.status_code != 200:
                         add_log("%s 下载失败，HTTP错误码： %s ，超过最大重试次数" % (file_name, res.status_code), 'Error')
@@ -106,6 +108,7 @@ class download(threading.Thread):
                                             _exit(1)
                                         else:
                                             add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn')
+                                            sleep(1)
                                 file_write_binary('{}{}{}'.format(self.path, '/', file_name), res.content)
                                 add_log("%s 下载成功，正在校验文件完整性" % file_name, 'Info')
                                 chksum_res = md5sum('{}{}{}'.format(self.path, '/', file_name), get_img_hash)
