@@ -13,6 +13,7 @@ from func.fileio import file_mkdir, file_is_exist, file_write_binary, file_delet
 from func.log import add_log
 from func.chksum import md5sum
 from core.constant import *
+
 urllib3.disable_warnings()
 
 download_count = 0
@@ -47,35 +48,36 @@ class download(threading.Thread):
                     download_count += 1
                     continue
                 add_log("正在下载 %s" % file_name, 'Info')
-                try:
-                    res = requests.get(get_img_url, proxies = self.proxy, verify = False) # 下载
-                except requests.exceptions.ProxyError:  # retry
-                    err_count = 0
-                    add_log("Proxy Connection failed, Retrying", 'Warn')
-                    retry_max = 10
-                    while err_count < retry_max:  # self.retry_max == -1:
+                err_count = 0
+                while True:
+                    try:
+                        res = requests.get(get_img_url, proxies = self.proxy, verify = False) # 下载
+                        break
+                    except Exception as e: # 这里是捕获网络错误（不包括应用层）
                         time.sleep(1)
-                        try:
-                            res = requests.get(get_img_url, proxies = self.proxy, verify = False) # 下载
-                            break
-                        except requests.exceptions.ProxyError:
-                            err_count += 1
-                            add_log(f"Proxy Connection failed, retrying {err_count}th times", 'Warn')
-                    if err_count >= retry_max:
-                        raise requests.exceptions.RequestException("Proxy Connection failed and hits retry limit")
-                except Exception as e:
-                    add_log("%s: %s" % (e.__class__.__name__, e), 'Error')
-                    _exit(1)
+                        err_count += 1
+                        if err_count > self.retry_max and self.retry_max != -1:
+                            add_log("%s: %s" % (e.__class__.__name__, e), 'Error')
+                            _exit(1)
+                        else:
+                            add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn')
                 err_count = 0
                 while res.status_code != 200 and (err_count < self.retry_max or self.retry_max == -1): # 下载失败且失败次数不大于指定次数则重新下载
                     err_count += 1
                     add_log("%s 下载失败，HTTP错误码： %s ，正在第 %s 次重试" % (file_name, res.status_code, err_count), 'Warn')
                     file_delete(self.path + '/' + file_name)
-                    try:
-                        res = requests.get(get_img_url, proxies = self.proxy, headers=headers, verify = False) # 重新下载
-                    except Exception as e:
-                        add_log("%s: %s" % (e.__class__.__name__, e), 'Error')
-                        _exit(1)
+                    while True:
+                        try:
+                            res = requests.get(get_img_url, proxies = self.proxy, headers=headers, verify = False) # 重新下载
+                            break
+                        except Exception as e:
+                            time.sleep(1)
+                            err_count += 1
+                            if err_count > self.retry_max and self.retry_max != -1:
+                                add_log("%s: %s" % (e.__class__.__name__, e), 'Error')
+                                _exit(1)
+                            else:
+                                add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn')
                 else:
                     if res.status_code != 200:
                         add_log("%s 下载失败，HTTP错误码： %s ，超过最大重试次数" % (file_name, res.status_code), 'Error')
@@ -95,11 +97,18 @@ class download(threading.Thread):
                                 err_count += 1
                                 add_log("%s 校验失败，%s -> %s 不匹配，正在第 %s 次重试" % (file_name, chksum_res, get_img_hash, err_count), 'Warn')
                                 file_delete(self.path + '/' + file_name)
-                                try:
-                                    res = requests.get(get_img_url, proxies = self.proxy, headers=headers, verify = False) # 重新下载
-                                except Exception as e:
-                                    add_log("%s: %s" % (e.__class__.__name__, e), 'Error')
-                                    _exit(1)
+                                while True:
+                                    try:
+                                        res = requests.get(get_img_url, proxies = self.proxy, headers=headers, verify = False) # 重新下载
+                                        break
+                                    except Exception as e:
+                                        time.sleep(1)
+                                        err_count += 1
+                                        if err_count > self.retry_max and self.retry_max != -1:
+                                            add_log("%s: %s" % (e.__class__.__name__, e), 'Error')
+                                            _exit(1)
+                                        else:
+                                            add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn')
                                 file_write_binary('{}{}{}'.format(self.path, '/', file_name), res.content)
                                 add_log("%s 下载成功，正在校验文件完整性" % file_name, 'Info')
                                 chksum_res = md5sum('{}{}{}'.format(self.path, '/', file_name), get_img_hash)

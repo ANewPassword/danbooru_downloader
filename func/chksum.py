@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import hashlib
 
 def md5sum(path, chk):

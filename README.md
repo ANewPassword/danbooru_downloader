@@ -26,7 +26,7 @@
 |      proxy       |     P      | 可选 |       (str)""        |                                                                             http 代理地址，格式：`http://[用户名:密码@]IP[:端口]`                                                                              |
 |     options      |     o      | 可选 |       (str)""        |  附加操作，使用“+”连接多个参数，取值范围：`["chksums", "make-config"]`，`chksums`：下载后进行文件完整性校验**（推荐）** / `make-config`：生成一个空白的配置文件，此时`file-config-path`将视为配置文件生成路径  |
 | file-config-path |    _无_    | 可选 | (str)"./config.json" |                                                                                    配置文件路径，只在运行模式为`file`时生效                                                                                    |
-|    retry-max     |    _无_    | 可选 |        (int)5        |                                                                                     最大重试次数，`-1`表示重试直到下载成功                                                                                     |
+|    retry-max     |    _无_    | 可选 |        (int)5        |                                                                                     最大网络请求重试次数，`-1`表示重试直到下载成功                                                                                     |
 
 ### 示例
 
@@ -226,6 +226,10 @@ python3 main.py -m file -o make-config "--file-config-path" "./cfg.json"
 ---
 
 ## 更新日志
+
+### V1.5.2
+
+1. 修复了部分场景下最大失败重试次数不生效的bug。
 
 ### V1.5.1
 

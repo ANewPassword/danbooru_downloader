@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from json import decoder, loads, dumps
 from func.log import add_log
 

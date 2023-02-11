@@ -1,0 +1,2 @@
+colorlog==6.6.0
+requests==2.28.1
