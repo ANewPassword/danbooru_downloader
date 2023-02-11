@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from os import _exit
 from asyncio import exceptions
 import requests
@@ -48,6 +49,20 @@ class download(threading.Thread):
                 add_log("正在下载 %s" % file_name, 'Info')
                 try:
                     res = requests.get(get_img_url, proxies = self.proxy, verify = False) # 下载
+                except requests.exceptions.ProxyError:  # retry
+                    err_count = 0
+                    add_log("Proxy Connection failed, Retrying", 'Warn')
+                    retry_max = 10
+                    while err_count < retry_max:  # self.retry_max == -1:
+                        time.sleep(1)
+                        try:
+                            res = requests.get(get_img_url, proxies = self.proxy, verify = False) # 下载
+                            break
+                        except requests.exceptions.ProxyError:
+                            err_count += 1
+                            add_log(f"Proxy Connection failed, retrying {err_count}th times", 'Warn')
+                    if err_count >= retry_max:
+                        raise requests.exceptions.RequestException("Proxy Connection failed and hits retry limit")
                 except Exception as e:
                     add_log("%s: %s" % (e.__class__.__name__, e), 'Error')
                     _exit(1)
