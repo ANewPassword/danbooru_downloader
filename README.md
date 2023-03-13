@@ -221,7 +221,7 @@ python3 main.py -m file -o make-config "--file-config-path" "./cfg.json"
 
 ### ModuleNotFoundError: No module named 'xxxxxx'
 
-使用`pip install`命令下载对应的库即可。
+`pip install -r requirement.txt`。
 
 ---
 
@@ -230,6 +230,7 @@ python3 main.py -m file -o make-config "--file-config-path" "./cfg.json"
 ### V1.5.2
 
 1. 修复了部分场景下最大失败重试次数不生效的bug。
+2. 网络错误后的重试前等待1s。
 
 ### V1.5.1
 
