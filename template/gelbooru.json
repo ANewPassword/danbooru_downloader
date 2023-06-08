@@ -1,0 +1,33 @@
+{
+    "mode": {
+        "page": {
+            "api": "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=100&tags=${tags}&pid=!{real_page_id}",
+            "download": {
+                "metadata": "!{all_metadata_format}",
+                "filename": "#{id}.!{file_ext_format}"
+            }
+        },
+        "id": {
+            "api": "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=100&tags=${tags}&pid=!{real_page_id}",
+            "download": {
+                "metadata": "!{all_metadata_format}",
+                "filename": "#{id}.!{file_ext_format}"
+            }
+        }
+    },
+    "advanced": {
+        "positioner": {
+            "#root": "['post']",
+            "#id": "['post'][${index}]['id']",
+            "#md5": "['post'][${index}]['md5']",
+            "#file_url": "['post'][${index}]['file_url']",
+            "#all_metadata": "['post'][${index}]",
+            "#file_ext": "['post'][${index}]['file_url']"
+        },
+        "variable": {
+            "!real_page_id": "exec_result = int(${page}) - 1",
+            "!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})",
+            "!file_ext_format": "exec_result = #{file_ext}.split('.')[-1]"
+        }
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "mode": {
+        "page": {
+            "api": "https://sakugabooru.com/post.json?limit=1000&page=${page}&tags=${tags}",
+            "download": {
+                "metadata": "!{all_metadata_format}"
+            }
+        },
+        "id": {
+            "api": "https://sakugabooru.com/post.json?limit=1000&page=${page}&tags=${tags}",
+            "download": {
+                "metadata": "!{all_metadata_format}"
+            }
+        }
+    },
+    "advanced": {
+        "positioner": {
+            "#all_metadata": "[${index}]"
+        },
+        "variable": {
+            "!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})"
+        }
+    }
+}

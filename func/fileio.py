@@ -2,7 +2,7 @@
 
 import os.path
 from shutil import rmtree, copytree
-from os import remove, makedirs
+from os import remove, makedirs, listdir, walk
 
 def file_mkdir(path):
     try:
@@ -37,11 +37,53 @@ def file_write_binary(path, content, mode = 'wb'):
         f.write(content)
         return True
 
+def file_write_stream(path, stream, chunk_size = 1048576, mode = 'wb'):
+    with open(path, mode) as f:
+        for chunk in stream.iter_content(chunk_size = chunk_size):
+            if chunk:
+                f.write(chunk)
+    return True
+
 def file_write(path, content, mode = 'w'):
     with open(path, mode, encoding="utf-8") as f:
         f.write(content)
         return True
 
 def file_read(path, mode = 'r'):
-    with open(path, mode) as f:
+    with open(path, mode, encoding="utf-8") as f:
         return f.read()
+
+def file_splitext(path):
+    return os.path.splitext(path)
+
+def dir_tree(path, build_tree = True, full_path = False):
+    if build_tree:
+        tree = {}
+        for name in listdir(path):
+            abs_path = os.path.join(path, name)
+            if full_path:
+                record_name = abs_path
+            else:
+                record_name = name
+            if os.path.isfile(abs_path):
+                tree[record_name] = None
+            elif os.path.isdir(abs_path):
+                tree[record_name] = dir_tree(abs_path, True, full_path)
+    else:
+        tree = []
+        for dirpath, dirs, files in walk(path):
+            for name in files:
+                if full_path:
+                    record_name = os.path.join(path, os.path.join(dirpath, name))
+                else:
+                    record_name = os.path.relpath(os.path.join(dirpath, name), path)
+                tree.append(record_name)
+    return tree
+
+def dir_list(path, include_sub_dir = True, full_path = False):
+    lst = listdir(path) if include_sub_dir else [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    if full_path:
+        for i in range(0, len(lst)):
+            lst[i] = os.path.join(path, lst[i])
+
+    return lst

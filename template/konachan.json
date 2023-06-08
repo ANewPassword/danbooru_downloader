@@ -1,0 +1,28 @@
+{
+    "mode": {
+        "page": {
+            "api": "https://konachan.com/post.json?limit=1000&tags=${tags}&page=${page}",
+            "download": {
+                "metadata": "!{all_metadata_format}",
+                "filename": "#{id}.!{file_ext_format}"
+            }
+        },
+        "id": {
+            "api": "https://konachan.com/post.json?limit=1000&tags=${tags}&page=${page}",
+            "download": {
+                "metadata": "!{all_metadata_format}",
+                "filename": "#{id}.!{file_ext_format}"
+            }
+        }
+    },
+    "advanced": {
+        "positioner": {
+            "#all_metadata": "[${index}]",
+            "#file_ext": "[${index}]['file_url']"
+        },
+        "variable": {
+            "!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})",
+            "!file_ext_format": "exec_result = #{file_ext}.split('.')[-1]"
+        }
+    }
+}

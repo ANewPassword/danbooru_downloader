@@ -1,0 +1,56 @@
+{
+  "mode": {
+      "page": {
+          "api": "",
+          "header": {
+              "User-Agent": "@{ua}"
+          },
+          "method": "GET",
+          "data": null,
+          "download": {
+              "metadata": "ID\r\n#{id}\r\n\r\nMD5\r\n#{md5}",
+              "filename": "#{id}.#{file_ext}",
+              "metadata_filename": "#{id}.json",
+              "header": {
+                  "User-Agent": "@{ua}"
+              }
+          }
+      },
+      "id": {
+          "api": "",
+          "header": {
+              "User-Agent": "@{ua}"
+          },
+          "method": "GET",
+          "data": null,
+          "download": {
+              "metadata": "ID\r\n#{id}\r\n\r\nMD5\r\n#{md5}",
+              "filename": "#{id}.#{file_ext}",
+              "metadata_filename": "#{id}.json",
+              "header": {
+                  "User-Agent": "@{ua}"
+              }
+          },
+          "op_symbol": {
+              "id": "id",
+              "id_range": "id",
+              "eq": ":",
+              "lt": ":<",
+              "gt": ":>"
+          }
+      }
+  },
+  "advanced": {
+      "positioner": {
+          "#root": "",
+          "#id": "[${index}]['id']",
+          "#md5": "[${index}]['md5']",
+          "#file_url": "[${index}]['file_url']",
+          "#file_ext": "[${index}]['file_ext']"
+      },
+      "constant": {
+          "@ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+      },
+      "variable": {}
+  }
+}
