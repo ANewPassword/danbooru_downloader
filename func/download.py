@@ -163,7 +163,9 @@ class Downloader(threading.Thread):
                 return True
  
 def start_download(download_info, thread, path, proxy_address, retry_max, deduplication, chksums, with_metadata, program_path, template_name): # 下载器接口
-    global download_count
+    global download_count, download_result
+    download_count = 0
+    download_result = []
     add_log("开始本次下载任务", 'Info', debug_info())
     decoding = 'utf8'
     thread = thread if thread <= len(download_info) else len(download_info)
@@ -179,22 +181,3 @@ def start_download(download_info, thread, path, proxy_address, retry_max, dedupl
             download_count = 0
             break
         sleep(1)
-
-def update_download(url, dir, filename, proxy_address):
-    proxy = proxy_address
-    urllib3.disable_warnings()
-    response = requests.get(url, proxies = proxy, verify = False) # 发送GET请求，不验证ssl证书
-    err_count = 0
-    while response.status_code != 200 and err_count < 5: # 下载失败且失败次数不大于五次则重新下载
-        err_count += 1
-        add_log("%s 下载失败，HTTP错误码： %s ，正在第 %s 次重试" % (url, response.status_code, err_count), 'Warn', debug_info())
-        response = requests.get(url, proxies = proxy, verify = False) # 重新下载
-    else:
-        if response.status_code != 200:
-            add_log("%s 下载失败，HTTP错误码： %s ，超过最大重试次数" % (url, response.status_code), 'Error', debug_info())
-            add_log("自动更新失败，请尝试手动更新", 'Error', debug_info())
-            exit()
-    file_mkdir(dir)
-    file_write_binary(dir + "/" + filename, response.content, mode = 'wb') # 写入文件
-    add_log("%s 下载成功" % url, 'Info', debug_info())
-    return True

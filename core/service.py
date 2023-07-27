@@ -5,7 +5,6 @@ from func.http import simple_http_api_request
 from func.json import json_decode, json_encode, json_encode_with_format
 from func.download import start_download
 from func.log import construct, reconstruct, add_log
-from func.update import u_check, u_delete, u_mkdir, u_copy, u_download
 from func.fileio import file_read, file_write, file_splitext, dir_list
 from func.template import list_template_string_include, check_template_variable_name, detect_template_include_loop, TemplateReader
 from func.dict import traverse_dict, get_dict_value_by_position_list, deep_update
@@ -392,41 +391,6 @@ class Service:
         add_log("最后修改时间： %s" % self.LAST_REVISE_TIME, 'Info', debug_info())
         add_log("Powered By %s. Some Rights Reserved." % self.AUTHOR, 'Info', debug_info())
     
-    def update(self):
-        add_log("正在检测更新", 'Info', debug_info())
-        update_data = u_check(self.VERSION, self.proxy)
-        update_data = json_decode(update_data)
-        if 'status' in update_data and int(update_data['status']) == 1:
-            update_data = update_data['data']
-            if self.VERSION != update_data['version']:
-                add_log("获取更新信息成功，当前版本： %s ，最新版本： %s" % (self.VERSION, update_data['version']), 'Info', debug_info())
-                confirm_update = input("是否确认更新？（y/n）")
-                if confirm_update not in ['', None] and confirm_update[0] in ['y', 'Y']:
-                    add_log("开始自动更新", 'Info', debug_info())
-                    tmp_dir = self.program_path + "/" + ".tmp/"
-                    add_log("创建临时目录", 'Info', debug_info())
-                    u_mkdir(tmp_dir) # 创建临时文件夹
-                    update_data = update_data['op']
-                    for i in update_data['add']:
-                        add_log("从 %s 下载更新" % i['source'] , 'Info', debug_info())
-                        u_download(i['source'], tmp_dir + i['dir'], i['name'], self.proxy)
-                    for i in update_data['del']['dir']:
-                        add_log("删除目录 %s" % i, 'Info', debug_info())
-                        u_delete(self.program_path + "/" + i, 'dir')
-                    for i in update_data['del']['file']:
-                        add_log("删除文件 %s" % i, 'Info', debug_info())
-                        u_delete(self.program_path + "/" + i)
-                    add_log("从临时目录复制到 %s" % self.program_path, 'Info', debug_info())
-                    u_copy(tmp_dir, self.program_path)
-                    add_log("删除临时目录", 'Info', debug_info())
-                    u_delete(tmp_dir, 'dir')
-                else:
-                    add_log("用户取消更新", 'Info', debug_info())
-            else:
-                add_log("已经是最新版本", 'Info', debug_info())
-        else:
-            add_log("获取更新信息失败，请尝试手动更新", 'Warn', debug_info())
-
     def page(self):
         add_log("根据页面ID下载", 'Info', debug_info())
         if self.end == -1: # 下载到最后一页

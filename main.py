@@ -67,8 +67,6 @@ try:
 
     if args['mode'] == "copyright": # 显示版权信息
         main.copyright()
-    elif args['mode'] == "update": # 更新脚本
-        main.update()
     elif args['mode'] == "page": # 根据页码下载
         main.page()
     elif args['mode'] == "id": # 根据图片ID下载

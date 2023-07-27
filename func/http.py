@@ -34,14 +34,3 @@ def simple_http_api_request(api, method, retry_max, header = None, data = None, 
                 add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn', debug_info())
     response.encoding = response.apparent_encoding # 防止中文乱码（似乎也没有中文）
     return response.text
-
-def check_update(version, proxy_address = "", update_api = None):
-    proxy = proxy_address
-    if update_api == None:
-        url = "http://mocha.cf/update/yande_re_downloader/?v=%s" % version # 默认更新接口
-    else:
-        url = update_api
-    urllib3.disable_warnings() # 关闭提示
-    response = get(url, proxies = proxy, verify = False) # 发送GET请求，不验证ssl证书
-    response.encoding = response.apparent_encoding # 防止中文乱码
-    return response.text
