@@ -49,7 +49,7 @@
           "#file_ext": "[${index}]['file_ext']"
       },
       "constant": {
-          "@ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+          "@ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
       },
       "variable": {}
   }

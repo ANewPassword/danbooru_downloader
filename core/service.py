@@ -349,6 +349,7 @@ class Service:
         self.set_template_preset_variable('proxy', self.proxy['http'])
         self.set_template_preset_variable('index', 0)
         self.template_reader = TemplateReader(self.template_cfg, self.template_delimiter_map)
+        add_log(self.template_cfg, 'Debug', debug_info())
         add_log("模板检查通过", 'Debug', debug_info())
 
     def set_template_preset_variable(self, variable_name, value):

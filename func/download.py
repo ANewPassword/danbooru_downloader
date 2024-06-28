@@ -9,8 +9,8 @@ import queue
 import threading
 from time import sleep, time, localtime, strftime
 from random import uniform
-from func.database import MySQL
-from func.fileio import file_mkdir, file_is_exist, file_write_binary, file_write_stream, file_write, file_delete
+from func.database import SQLLITE
+from func.fileio import file_mkdir, file_is_exist, file_write_binary, file_write_stream, file_write, file_delete, file_size
 from func.log import add_log
 from func.debug import debug_info
 from func.chksum import md5sum
@@ -40,7 +40,7 @@ class Downloader(threading.Thread):
             if not self.que.empty():
                 # sleep(uniform(0.2, 0.5)) # 防止写入日志出错
                 file_mkdir(self.path)
-                db_handler = MySQL(self.program_path, self.template_name)
+                db_handler = SQLLITE(self.program_path, self.template_name)
                 db_handler.connect()
                 db_handler.install()
                 post_list = self.que.get() # 取出一个图片
@@ -90,8 +90,26 @@ class Downloader(threading.Thread):
                             if continue_point:
                                 break
                             res = requests.get(post_url, proxies = self.proxy, headers = post_header, verify = False, stream = True) # 下载
+                            task_length = int(res.headers.get('content-length', 0))
                             if res.status_code == 200:
-                                file_write_stream('{}{}{}'.format(self.path, '/', post_file_name), res) # 写入文件
+                                if not file_write_stream('{}{}{}'.format(self.path, '/', post_file_name), res, 3600): # 写入文件
+                                    if err_count < self.retry_max or self.retry_max == -1:
+                                        err_count += 1
+                                        add_log('%s 下载超时, 正在第 %s 次重试' % (post_file_name, err_count), 'Warn')
+                                        continue
+                                    else:
+                                        add_log('%s 下载超时, 超过最大重试次数' % (post_file_name), 'Error')
+                                        continue_point = True
+                                        continue
+                                if task_length != file_size('{}{}{}'.format(self.path, '/', post_file_name)) and task_length != 0:
+                                    if err_count < self.retry_max or self.retry_max == -1:
+                                        err_count += 1
+                                        add_log('%s 本地文件与远端文件大小不一致, 正在第 %s 次重试' % (post_file_name, err_count), 'Warn')
+                                        continue
+                                    else:
+                                        add_log('%s 本地文件与远端文件大小不一致, 超过最大重试次数' % (post_file_name), 'Error')
+                                        continue_point = True
+                                        continue
                             elif err_count < self.retry_max or self.retry_max == -1:
                                 err_count += 1
                                 add_log("%s 请求失败，HTTP错误码： %s ，正在第 %s 次重试" % (post_file_name, res.status_code, err_count), 'Warn', debug_info())

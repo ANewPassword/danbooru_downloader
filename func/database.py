@@ -4,7 +4,7 @@ import sqlite3
 from time import time
 from func.fileio import file_mkdir
 
-class MySQL: # 明明是sqllite却用mysql当类名，何尝不是一种ntr
+class SQLLITE:
     def __init__(self, program_path, template_name):
         self.program_path = program_path
         self.template_name = template_name

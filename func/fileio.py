@@ -3,6 +3,8 @@
 import os.path
 from shutil import rmtree, copytree
 from os import remove, makedirs, listdir, walk
+from os.path import getsize
+from time import time
 
 def file_mkdir(path):
     try:
@@ -37,9 +39,14 @@ def file_write_binary(path, content, mode = 'wb'):
         f.write(content)
         return True
 
-def file_write_stream(path, stream, chunk_size = 1048576, mode = 'wb'):
+def file_write_stream(path, stream: any, timeout = 600, chunk_size = 1048576, mode = 'wb'):
+    start_time = time()
     with open(path, mode) as f:
         for chunk in stream.iter_content(chunk_size = chunk_size):
+            elapsed_time = time() - start_time
+            if elapsed_time >= timeout and timeout != -1:
+                stream.close()
+                return False
             if chunk:
                 f.write(chunk)
     return True
@@ -55,6 +62,9 @@ def file_read(path, mode = 'r'):
 
 def file_splitext(path):
     return os.path.splitext(path)
+
+def file_size(path):
+    return getsize(path)
 
 def dir_tree(path, build_tree = True, full_path = False):
     if build_tree:
