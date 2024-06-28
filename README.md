@@ -35,49 +35,49 @@
 
 ```text
 {
-    "mode": {
-        "page": {
-            "api": "",
-            "header": {},
-            "method": "",
-            "data": "",
-            "download": {
-                "metadata": "",
-                "filename": "",
-                "metadata_filename": "",
-                "header": {}
-            }
-        },
-        "id": {
-            "api": "",
-            "header": {},
-            "method": "",
-            "data": "",
-            "download": {
-                "metadata": "",
-                "filename": "",
-                "metadata_filename": "",
-                "header": {}
-            },
-            "op_symbol": {
-                "id": "",
-                "id_range": "",
-                "eq": "",
-                "lt": "",
-                "gt": ""
-            }
-        }
-    },
-    "advanced": {
-        "positioner": {
-            "#root": "",
-            "#id": "",
-            "#md5": "",
-            "#file_url": ""
-        },
-        "constant": {},
-        "variable": {}
-    }
+	"mode": {
+		"page": {
+			"api": "",
+			"header": {},
+			"method": "",
+			"data": "",
+			"download": {
+				"metadata": "",
+				"filename": "",
+				"metadata_filename": "",
+				"header": {}
+			}
+		},
+		"id": {
+			"api": "",
+			"header": {},
+			"method": "",
+			"data": "",
+			"download": {
+				"metadata": "",
+				"filename": "",
+				"metadata_filename": "",
+				"header": {}
+			},
+			"op_symbol": {
+				"id": "",
+				"id_range": "",
+				"eq": "",
+				"lt": "",
+				"gt": ""
+			}
+		}
+	},
+	"advanced": {
+		"positioner": {
+			"#root": "",
+			"#id": "",
+			"#md5": "",
+			"#file_url": ""
+		},
+		"constant": {},
+		"variable": {}
+	}
 }
 ```
 
@@ -245,7 +245,7 @@ python3 main.py -m file "--file-config-path" "./config.json"
 
 ```text
 {
-    "args": {
+	"args": {
 		"mode": "page",
 		"template": "yandere",
 		"start": 1,
@@ -255,14 +255,14 @@ python3 main.py -m file "--file-config-path" "./config.json"
 		"proxy": "http://username:password@127.0.0.1:8080",
 		"thread": 5,
 		"file_config_path": "",
-        "retry_max": "20",
-        "log_level": "Info",
-        "deduplication": "strict",
-        "chksums": true,
-        "with_metadata": false,
-        "make_config": false,
-        "no_print_log": false
-    }
+		"retry_max": "20",
+		"log_level": "Info",
+		"deduplication": "strict",
+		"chksums": true,
+		"with_metadata": false,
+		"make_config": false,
+		"no_print_log": false
+	}
 }
 ```
 
@@ -280,13 +280,14 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 
 ```text
 {
-    "args": {
+	"args": {
 		"mode": "page",
 		"start": 1,
 		"end": 5,
 		"tags": "angel+-tagme+tail+-ass",
 		"thread": 5,
 		"proxy": "http://username:password@127.0.0.1:8080"
+	}
 }
 ```
 
@@ -316,27 +317,27 @@ rule34 的 api 返回的 hash 有可能与实际文件 hash 不一致，建议�
 
 ### V2.0.2
 
-1. 更新了网站模板
-2. 完善了文件完整性校验逻辑
-3. 完善了运行时的状态信息
+1. 更新了网站模板。
+2. 完善了文件完整性校验逻辑。
+3. 完善了运行时的状态信息。
 
 ### V2.0.1
 
-1. 删除了 update 模式
-2. 修复了下载时可能无法正常阻塞线程的 bug
-3. 完善了运行时的状态信息
+1. 删除了 update 模式。
+2. 修复了下载时可能无法正常阻塞线程的 bug。
+3. 完善了运行时的状态信息。
 
 ### V2.0.0
 
-1. 项目名修改为 danbooru_downloader，现在支持 danbooru 和基于 danbooru 修改的大部分图库
-2. 添加了自定义网站模板功能
-3. 添加了更改日志记录级别功能
-4. 完善了去重功能并添加自定义选择去重模式功能，不再依靠文件名去重
-5. 添加了记录图片元数据功能
-6. 添加了不打印日志功能
-7. 添加了一些预设模板
-8. 完善了运行时的状态信息
-9. 优化了代码逻辑
+1. 项目名修改为 danbooru_downloader，现在支持 danbooru 和基于 danbooru 修改的大部分图库。
+2. 添加了自定义网站模板功能。
+3. 添加了更改日志记录级别功能。
+4. 完善了去重功能并添加自定义选择去重模式功能，不再依靠文件名去重。
+5. 添加了记录图片元数据功能。
+6. 添加了不打印日志功能。
+7. 添加了一些预设模板。
+8. 完善了运行时的状态信息。
+9. 优化了代码逻辑。
 
 ### V1.5.2
 

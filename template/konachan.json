@@ -1,48 +1,48 @@
 {
-    "mode": {
-        "page": {
-            "api": "https://konachan.com/post.json?limit=1000&tags=${tags}&page=${page}",
-            "header": {
+	"mode": {
+		"page": {
+			"api": "https://konachan.com/post.json?limit=1000&tags=${tags}&page=${page}",
+			"header": {
 				"Cookie": "@{cf_cookie}",
-                    "User-Agent": "@{cf_ua}"
+				"User-Agent": "@{cf_ua}"
 			},
-            "download": {
-                "metadata": "!{all_metadata_format}",
-                "filename": "#{id}.!{file_ext_format}",
-                "header": {
-                    "Cookie": "@{cf_cookie}",
-                    "User-Agent": "@{cf_ua}"
-                }
-            }
-        },
-        "id": {
-            "api": "https://konachan.com/post.json?limit=1000&tags=${tags}&page=${page}",
-            "header": {
+			"download": {
+				"metadata": "!{all_metadata_format}",
+				"filename": "#{id}.!{file_ext_format}",
+				"header": {
+					"Cookie": "@{cf_cookie}",
+					"User-Agent": "@{cf_ua}"
+				}
+			}
+		},
+		"id": {
+			"api": "https://konachan.com/post.json?limit=1000&tags=${tags}&page=${page}",
+			"header": {
 				"Cookie": "@{cf_cookie}",
-                    "User-Agent": "@{cf_ua}"
+				"User-Agent": "@{cf_ua}"
 			},
-            "download": {
-                "metadata": "!{all_metadata_format}",
-                "filename": "#{id}.!{file_ext_format}",
-                "header": {
-                    "Cookie": "@{cf_cookie}",
-                    "User-Agent": "@{cf_ua}"
-                }
-            }
-        }
-    },
-    "advanced": {
-        "positioner": {
-            "#all_metadata": "[${index}]",
-            "#file_ext": "[${index}]['file_url']"
-        },
-        "constant": {
-            "@cf_cookie": "手动通过Cloudflare质询后获取到的Cookie",
-            "@cf_ua": "通过Cloudflare质询时的浏览器UA"
-        },
-        "variable": {
-            "!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})",
-            "!file_ext_format": "exec_result = #{file_ext}.split('.')[-1]"
-        }
-    }
+			"download": {
+				"metadata": "!{all_metadata_format}",
+				"filename": "#{id}.!{file_ext_format}",
+				"header": {
+					"Cookie": "@{cf_cookie}",
+					"User-Agent": "@{cf_ua}"
+				}
+			}
+		}
+	},
+	"advanced": {
+		"positioner": {
+			"#all_metadata": "[${index}]",
+			"#file_ext": "[${index}]['file_url']"
+		},
+		"constant": {
+			"@cf_cookie": "手动通过Cloudflare质询后获取到的Cookie",
+			"@cf_ua": "通过Cloudflare质询时的浏览器UA"
+		},
+		"variable": {
+			"!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})",
+			"!file_ext_format": "exec_result = #{file_ext}.split('.')[-1]"
+		}
+	}
 }

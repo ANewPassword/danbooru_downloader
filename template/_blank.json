@@ -1,45 +1,45 @@
 {
-    "mode": {
-        "page": {
-            "api": "",
-            "header": {},
-            "method": "",
-            "data": "",
-            "download": {
-                "metadata": "",
-                "filename": "",
-                "metadata_filename": "",
-                "header": {}
-            }
-        },
-        "id": {
-            "api": "",
-            "header": {},
-            "method": "",
-            "data": "",
-            "download": {
-                "metadata": "",
-                "filename": "",
-                "metadata_filename": "",
-                "header": {}
-            },
-            "op_symbol": {
-                "id": "",
-                "id_range": "",
-                "eq": "",
-                "lt": "",
-                "gt": ""
-            }
-        }
-    },
-    "advanced": {
-        "positioner": {
-            "#root": "",
-            "#id": "",
-            "#md5": "",
-            "#file_url": ""
-        },
-        "constant": {},
-        "variable": {}
-    }
+	"mode": {
+		"page": {
+			"api": "",
+			"header": {},
+			"method": "",
+			"data": "",
+			"download": {
+				"metadata": "",
+				"filename": "",
+				"metadata_filename": "",
+				"header": {}
+			}
+		},
+		"id": {
+			"api": "",
+			"header": {},
+			"method": "",
+			"data": "",
+			"download": {
+				"metadata": "",
+				"filename": "",
+				"metadata_filename": "",
+				"header": {}
+			},
+			"op_symbol": {
+				"id": "",
+				"id_range": "",
+				"eq": "",
+				"lt": "",
+				"gt": ""
+			}
+		}
+	},
+	"advanced": {
+		"positioner": {
+			"#root": "",
+			"#id": "",
+			"#md5": "",
+			"#file_url": ""
+		},
+		"constant": {},
+		"variable": {}
+	}
 }

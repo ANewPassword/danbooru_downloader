@@ -7,7 +7,7 @@
 			},
 			"download": {
 				"metadata": "!{all_metadata_format}",
-                "filename": "#{id}.!{file_ext_format}",
+				"filename": "#{id}.!{file_ext_format}",
 				"header": {
 					"Referer": "https://chan.sankakucomplex.com/post/show/#{md5}"
 				}
@@ -32,9 +32,9 @@
 	},
 	"advanced": {
 		"positioner": {
-            "#file_ext": "[${index}]['file_type']",
+			"#file_ext": "[${index}]['file_type']",
 			"#tags": "[${index}]['tags']",
-            "#source": "[${index}]['source']",
+			"#source": "[${index}]['source']",
 			"#all_metadata": "[${index}]"
 		},
 		"constant": {
@@ -44,7 +44,7 @@
 		},
 		"variable": {
 			"!auth": "from requests import post\nfrom requests.packages import urllib3\nurllib3.disable_warnings()\nfrom func.json import json_decode\nproxy = {'http': ${proxy} if ${proxy} not in ['', 'None', 'null'] else None, 'https': ${proxy} if ${proxy} not in ['', 'None', 'null'] else None}\nheader = {'Content-Type': 'application/json', 'Accept-Charset': 'UTF-8', 'User-Agent': @{ua}}\ndata = '{\"login\": \"%s\",\"password\": \"%s\"}' % (@{auth_username}, @{auth_password})\nwhile True:\n try:\n  response = post(@{auth_api}, proxies = proxy, headers = header, data = data, verify = False)\n  if 'access_token' in json_decode(response.text):\n   break\n except Exception as e:\n  print('sankakucomplex.advanced.variable.!auth: 获取登录信息失败，请检查网络设置和账号密码是否正确，即将重试')\nexec_result = json_decode(response.text)['access_token']",
-            "!tags_format": "from func.json import json_decode\nexec_result = ''\nfor i in #{tags}:exec_result = exec_result + i['tagName'] + ' '\nexec_result = exec_result[:-1]",
+			"!tags_format": "from func.json import json_decode\nexec_result = ''\nfor i in #{tags}:exec_result = exec_result + i['tagName'] + ' '\nexec_result = exec_result[:-1]",
 			"!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})",
 			"!file_ext_format": "from mimetypes import guess_extension\nexec_result = guess_extension(#{file_ext})[1:]"
 		}
