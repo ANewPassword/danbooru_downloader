@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from sys import path as getpath
+    import sys
+    from os.path import dirname
     from core.constant import *
     from core.service import Service
     from func.args import ap
@@ -9,7 +10,10 @@ try:
     from func.debug import debug_info
 
     args = ap()
-    get_path = getpath[0] + "/"
+    if getattr(sys, "frozen", False):
+        get_path = dirname(sys.executable) + "/"
+    else:
+        get_path = sys.path[0] + "/"
     # args['path'] = get_path + "/" + args['path']
 
     args_dict = {
