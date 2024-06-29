@@ -25,7 +25,7 @@
 | file-config-path |   _无_   | 可选 | (str)"./config.json" |                                                                    配置文件路径，只在运行模式为`file`时生效                                                                     |
 |    retry-max     |   _无_   | 可选 |        (int)5        |                                                                 最大网络请求重试次数，`-1`表示重试直到下载成功                                                                  |
 |    log-level     |   _无_   | 可选 |     (str)"Info"      |                                   更改日志记录等级，取值范围：`["Debug", "Info", "Warn", "Error", "None"]`，日志等级依次升高，信息量依次减少                                    |
-|  deduplication   |   _无_   | 可选 |    (str)"strict"     |                                   去重模式,取值范围：`strict`：严格模式，通过 ID+MD5 验证 / `sloppy`：宽松模式，通过 ID 验证 / `none`：不验证                                   |
+|  deduplication   |   _无_   | 可选 |    (str)"strict"     |                                   去重模式，取值范围：`strict`：严格模式，通过 ID+MD5 验证 / `sloppy`：宽松模式，通过 ID 验证 / `none`：不验证                                   |
 |     chksums      |   _无_   | 可选 |    (boolean)True     |                                                                     下载后进行文件完整性校验（标志性参数）                                                                      |
 |  with-metadata   |   _无_   | 可选 |    (boolean)False    |                                                                       保存每个图片的元数据（标志性参数）                                                                        |
 |   make-config    |   _无_   | 可选 |    (boolean)False    |                                               生成一个空白的配置文件，此时`file-config-path`将视为配置文件生成路径（标志性参数）                                                |
@@ -71,7 +71,7 @@ python3 main.py -m id -s 1 -e -1
 
 #### `page`模式
 
-**yande.re 的 page id 会动态更新：page id 越大，图片上传时间越早，最新图片所在的 page id 永远为 1。**
+**danbooru 的 page id 会动态更新：page id 越大，图片上传时间越早，最新图片所在的 page id 永远为 1。**
 
 ##### 示例五
 
