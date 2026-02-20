@@ -1,17 +1,23 @@
 {
 	"mode": {
 		"page": {
-			"api": "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=100&tags=${tags}&pid=!{real_page_id}",
+			"api": "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=100&tags=${tags}&pid=!{real_page_id}&api_key=@{api_key}&user_id=@{user_id}",
 			"download": {
 				"metadata": "!{all_metadata_format}",
-				"filename": "#{id}.!{file_ext_format}"
+				"filename": "#{id}.!{file_ext_format}",
+				"header": {
+					"Referer": "https://gelbooru.com/"
+				}
 			}
 		},
 		"id": {
-			"api": "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=100&tags=${tags}&pid=!{real_page_id}",
+			"api": "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=100&tags=${tags}&pid=!{real_page_id}&api_key=@{api_key}&user_id=@{user_id}",
 			"download": {
 				"metadata": "!{all_metadata_format}",
-				"filename": "#{id}.!{file_ext_format}"
+				"filename": "#{id}.!{file_ext_format}",
+				"header": {
+					"Referer": "https://gelbooru.com/"
+				}
 			}
 		}
 	},
@@ -23,6 +29,10 @@
 			"#file_url": "['post'][${index}]['file_url']",
 			"#all_metadata": "['post'][${index}]",
 			"#file_ext": "['post'][${index}]['file_url']"
+		},
+		"constant": {
+			"@api_key": "在Account Options中获取到的api key",
+			"@user_id": "在Account Options中获取到的user id"
 		},
 		"variable": {
 			"!real_page_id": "exec_result = int(${page}) - 1",
