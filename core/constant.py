@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 # 全局常量
-VERSION = "V2.0.6"
+VERSION = "V2.1.0"
 AUTHOR = "MoCha"
-LAST_REVISE_TIME = "2026-02-23 12:47:50"
+LAST_REVISE_TIME = "2026-02-23 17:57:37"
 
 # 部分参数取值范围
 allow_mode = ["id", "page", "file", "copyright"]
@@ -15,15 +15,17 @@ allow_mode_after_process_file = ["id", "page", "copyright"]
 # 模板模块 部分模板结构列表和引用策略
 allow_template_root = ['mode', 'advanced']
 allow_template_mode = ['page', 'id']
-allow_template_mode_page = ['api', 'header', 'method', 'data', 'download']
+allow_template_mode_page = ['api', 'exchange', 'header', 'method', 'data', 'download']
+allow_template_mode_page_exchange = ['json', 'xml']
 allow_template_mode_page_method = ['GET', 'POST']
 allow_template_mode_page_download = ['metadata', 'filename', 'metadata_filename', 'header']
-allow_template_mode_id = ['api', 'header', 'method', 'data', 'download', 'op_symbol']
+allow_template_mode_id = ['api', 'exchange', 'header', 'method', 'data', 'download', 'op_symbol']
+allow_template_mode_id_exchange = ['json', 'xml']
 allow_template_mode_id_method = ['GET', 'POST']
 allow_template_mode_id_download = ['metadata', 'filename', 'metadata_filename', 'header']
 allow_template_mode_id_op_symbol = ['id', 'id_range', 'eq', 'lt', 'gt']
 allow_template_advanced = ['positioner', 'constant', 'variable']
-template_preset_variables = ['tags', 'page', 'proxy', 'index']
+template_preset_variables = ['tags', 'page', 'retry_max', 'proxy', 'index', 'post_object']
 template_delimiter_map = {"preset": "$", "positioner": "#", "constant": "@", "variable": "!"}
 template_acl = {
     "mode": {
@@ -104,6 +106,17 @@ template_acl = {
                         "positioner": False,
                         "constant": True,
                         "variable": True
+                    },
+                    "sub_key": None,
+                    "sub_value": None
+                },
+                "exchange": {
+                    "key": None,
+                    "value": {
+                        "preset": False,
+                        "positioner": False,
+                        "constant": False,
+                        "variable": False
                     },
                     "sub_key": None,
                     "sub_value": None
@@ -226,6 +239,17 @@ template_acl = {
                         "positioner": False,
                         "constant": True,
                         "variable": True
+                    },
+                    "sub_key": None,
+                    "sub_value": None
+                },
+                "exchange": {
+                    "key": None,
+                    "value": {
+                        "preset": False,
+                        "positioner": False,
+                        "constant": False,
+                        "variable": False
                     },
                     "sub_key": None,
                     "sub_value": None
@@ -389,7 +413,7 @@ default_file_config_path = "./config.json"
 default_retry_max = 5
 default_log_level = "Info"
 default_deduplication = "strict"
-default_chksums = True
+default_chksums = False
 default_with_metadata = False
 default_make_config = False
 default_no_print_log = False

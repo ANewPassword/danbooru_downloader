@@ -1,0 +1,44 @@
+{
+	"mode": {
+		"page": {
+			"api": "https://api.anime-pictures.net/api/v3/posts?posts_per_page=100&page=!{real_page_id}&search_tag=${tags}",
+			"header": {
+                "Cookie": "@{cookie}"
+            },
+			"download": {
+				"metadata": "!{all_metadata_format}",
+                "filename": "#{id}#{file_ext}",
+				"header": {
+                    "Cookie": "@{cookie}",
+					"Referer": "https://anime-pictures.net/"
+                }
+			}
+		},
+		"id": {
+			"api": "!{id_unsupported}"
+		}
+	},
+	"advanced": {
+		"positioner": {
+			"#root": "['posts']",
+            "#id": "['posts'][${index}]['id']",
+			"#md5": "['posts'][${index}]['md5']",
+			"#file_url": "['posts'][${index}]['calc_file_url']",
+			"#file_ext": "['posts'][${index}]['ext']",
+            "#all_metadata": "['posts'][${index}]"
+		},
+		"constant": {
+			"@about_id_mode": "animepictures暂不支持ID模式",
+			"@about_tags": "在animepictures上，只能搜索一个tag，且不能排除",
+			"@image_api": "https://oimages.anime-pictures.net/",
+            "@cookie": "手动登录后随机选择一个图片**查看原图**，在@{image_api}域名下获取到的Cookie（包括Cloudflare质询）",
+			"@ua": "通过Cloudflare质询时的浏览器UA"
+        },
+		"variable": {
+            "!real_page_id": "exec_result = int(${page}) - 1",
+            "!post_object_hook": "${post_object}.update({'calc_file_url': @{image_api} + #{md5}[:3] + '/' + #{md5} + #{file_ext}})\nexec_result = ${post_object}",
+            "!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})",
+            "!id_unsupported": "print('animepictures.advanced.variable.!unsupported: 此网站模板不支持ID模式')\nfrom os import _exit\n_exit(1)"
+        }
+	}
+}

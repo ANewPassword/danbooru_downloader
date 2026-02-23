@@ -1,6 +1,6 @@
 ## 它可以做什么
 
-此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据`页面ID`/`图片ID`区间下载两种下载模式，脚本预设了 danbooru/gelbooru/yande.re/konachan/rule34/sankakucomplex 等常见的基于 danbooru 和 gelbooru 程序搭建的图库的网站爬虫模板，另支持自定义设置`下载模板`、`搜索/排除标签`、`线程数`、`自定义保存路径`、`http代理`、`下载查重`、`校验文件完整性`、`保存元数据`等强大功能。
+此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据`页面ID`/`图片ID`区间下载两种下载模式，脚本预设了 danbooru/gelbooru/yande.re/konachan/rule34/sankakucomplex/zerochan/animepictures 等常见的基于 danbooru 和 gelbooru 程序搭建的图库的网站爬虫模板，另支持自定义设置`下载模板`、`搜索/排除标签`、`线程数`、`自定义保存路径`、`http代理`、`下载查重`、`校验文件完整性`、`保存元数据`等强大功能。
 
 ---
 
@@ -183,6 +183,7 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 	"mode": {
 		"page": {
 			"api": "",
+			"exchange": "",
 			"header": {},
 			"method": "",
 			"data": "",
@@ -195,6 +196,7 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 		},
 		"id": {
 			"api": "",
+			"exchange": "",
 			"header": {},
 			"method": "",
 			"data": "",
@@ -221,7 +223,9 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 			"#file_url": ""
 		},
 		"constant": {},
-		"variable": {}
+		"variable": {
+			"!post_object_hook": ""
+		}
 	}
 }
 ```
@@ -239,6 +243,7 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 用于按页面下载。
 
 - `api`：API 地址
+- `exchange`：API 响应格式，取值范围：`json`、`xml`。程序根据此字段决定如何解析 API 返回的数据
 - `header`：调用此 API 时的请求头信息
 - `method`：调用此 API 时的 HTTP 请求方法（如 GET、POST）
 - `data`：调用此 API 时的请求数据（针对 POST 等方法）
@@ -253,6 +258,7 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 用于按 ID 下载。
 
 - `api`：API 地址
+- `exchange`：API 响应格式，取值范围：`json`、`xml`。程序根据此字段决定如何解析 API 返回的数据
 - `header`：调用此 API 时的请求头信息
 - `method`：调用此 API 时的 HTTP 请求方法（如 GET、POST）
 - `data`：调用此 API 时的请求数据（针对 POST 等方法）
@@ -282,8 +288,10 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 
 - `$tags`：运行参数`tags`
 - `$page`：页面 ID，初始为 1，每次请求 API 后自增 1
+- `$retry_max`：运行参数`retry_max`，最大网络请求重试次数
 - `$proxy`：运行参数`proxy`
 - `$index`：数组下标，用于遍历从 API 获取到的图片 JSON 数组
+- `$post_object`：当前正在遍历的图片对象，在`!post_object_hook`执行后会被更新为其返回值
 
 ##### `positioner`
 
@@ -301,6 +309,8 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 ##### `variable`
 
 动态变量，分隔符为`!`。动态变量实际上是 Python 代码片段，需要返回（return）的内容需要被赋值给名为`exec_result`的变量，而不是使用`return`关键字。
+
+其中`!post_object_hook`是一个特殊的内置动态变量，它会在遍历图片列表时对每个条目执行一次。可以利用它对 API 返回的原始数据进行预处理，例如发起额外的网络请求获取详细信息、拼接下载链接等。`!post_object_hook`的返回值会覆盖当前的`$post_object`。如果不需要预处理，保持默认值`exec_result = ${post_object}`（直接透传）即可。
 
 > [!WARNING]
 > **`variable` 是一个强大但极度危险的组件。** 其内容会作为 Python 代码直接在本地执行，理论上可以执行任意系统操作。**除非你完全读懂了模板中每一条 `variable` 的含义，否则绝对不要使用来自网络上不明来源的第三方模板。** 恶意模板可能借此窃取数据、破坏文件或执行其他危险操作。
@@ -328,6 +338,16 @@ rule34 的 api 返回的 hash 有可能与实际文件 hash 不一致，建议�
 ---
 
 ## 更新日志
+
+### V2.1.0
+
+1. 更换了 HTTP 请求库。
+2. 模板系统添加了 `retry_max`、`post_object` 预设变量。
+3. 模板系统添加了 `exchange` 字段，支持 JSON 和 XML 两种 API 响应格式解析。
+4. 模板系统添加了 `!post_object_hook` 机制，允许在遍历图片列表时对每个条目执行自定义预处理。
+5. 添加了 zerochan 和 animepictures 网站模板。
+6. 修复了下载器多线程竞态导致程序无法正常退出的 bug。
+7. 修复了部分失败路径下去重数据库误写入的 bug。
 
 ### V2.0.6
 

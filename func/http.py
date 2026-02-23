@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from requests import get, post
-from requests.packages import urllib3
+from curl_cffi.requests import get, post
 from func.log import add_log
 from func.debug import debug_info
 from os import _exit
@@ -13,15 +12,14 @@ def simple_http_api_request(api, method, retry_max, header = None, data = None, 
     if data == '':
         data = None
     proxy = proxy_address
-    urllib3.disable_warnings() # 关闭提示
     err_count = 0
     while True:
         try:
             # 发送请求，不验证ssl证书
             if method == 'GET':
-                response = get(url, headers = header, proxies = proxy, verify = False)
+                response = get(url, headers = header, proxies = proxy, verify = False, impersonate = "chrome136")
             elif method == 'POST':
-                response = post(url, headers = header, data = data, proxies = proxy, verify = False)
+                response = post(url, headers = header, data = data, proxies = proxy, verify = False, impersonate = "chrome136")
             else:
                 return False
             break
@@ -32,5 +30,4 @@ def simple_http_api_request(api, method, retry_max, header = None, data = None, 
                 _exit(1)
             else:
                 add_log("%s: %s ，正在第 %s 次重试" % (e.__class__.__name__, e, err_count), 'Warn', debug_info())
-    response.encoding = response.apparent_encoding # 防止中文乱码（似乎也没有中文）
     return response.text

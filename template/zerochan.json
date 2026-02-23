@@ -1,0 +1,41 @@
+{
+	"mode": {
+		"page": {
+			"api": "https://www.zerochan.net/${tags}?p=${page}&s=id&l=48&json",
+			"header": {
+				"User-Agent": "@{ua}"
+			},
+			"download": {
+				"metadata": "!{all_metadata_format}",
+				"filename": "#{id}.!{file_ext}",
+				"header": {
+					"User-Agent": "@{ua}"
+				}
+			}
+		},
+		"id": {
+			"api": "!{id_unsupported}"
+		}
+	},
+	"advanced": {
+		"positioner": {
+			"#root": "['items']",
+			"#id": "['items'][${index}]['id']",
+			"#md5": "['items'][${index}]['hook_add']['hash']",
+			"#file_url": "['items'][${index}]['hook_add']['full']",
+            "#all_metadata": "['items'][${index}]"
+		},
+		"constant": {
+            "@about_id_mode": "来自源站的限制：zerochan暂不支持ID模式",
+            "@about_tags": "在zerochan上，tags之间使用(,)连接，而不是(+)",
+			"@ua": "Image Meta Data Scraper - undefined"
+        },
+		"variable": {
+            "!all_metadata_format": "from func.json import json_encode\nexec_result = json_encode(#{all_metadata})",
+            "!id_unsupported": "print('zerochan.advanced.variable.!id_unsupported: 此网站模板不支持ID模式')\nfrom os import _exit\n_exit(1)",
+            "!post_object_hook": "from requests import post\nfrom requests.packages import urllib3\nfrom time import sleep\nurllib3.disable_warnings()\nfrom func.json import json_decode\nproxy = {'http': ${proxy} if ${proxy} not in ['', 'None', 'null'] else None, 'https': ${proxy} if ${proxy} not in ['', 'None', 'null'] else None}\nheader = {'User-Agent': @{ua}}\nerr_count = 0\nwhile True:\n try:\n  response = post(!{get_post_api_by_id}, proxies = proxy, headers = header, verify = False)\n  res = json_decode(response.text, True)\n  if 'id' in res:\n   ${post_object}.update({'hook_add': res})\n   print('zerochan.advanced.variable.!post_object_hook: [' + str(${index} + 1) + ']获取' + str(#{id}) + '信息成功')\n   break\n except Exception as e:\n  err_count += 1\n  if err_count > ${retry_max} and ${retry_max} != -1:\n   print('zerochan.advanced.variable.!post_object_hook: [' + str(${index} + 1) + ']获取' + str(#{id}) + '信息时出现错误, 超过最大重试次数')\n   break\n  else:\n   print('zerochan.advanced.variable.!post_object_hook: [' + str(${index} + 1) + ']获取' + str(#{id}) + '信息时出现错误, 即将第' + str(err_count) + '次重试')\n   sleep(err_count * 10)\nexec_result = ${post_object}",
+            "!file_ext": "exec_result = #{file_url}.split('.')[-1]",
+            "!get_post_api_by_id": "exec_result = 'https://www.zerochan.net/' + str(#{id}) + '?json'"
+        }
+	}
+}

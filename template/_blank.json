@@ -2,6 +2,7 @@
 	"mode": {
 		"page": {
 			"api": "",
+			"exchange": "",
 			"header": {},
 			"method": "",
 			"data": "",
@@ -14,6 +15,7 @@
 		},
 		"id": {
 			"api": "",
+			"exchange": "",
 			"header": {},
 			"method": "",
 			"data": "",
@@ -40,6 +42,8 @@
 			"#file_url": ""
 		},
 		"constant": {},
-		"variable": {}
+		"variable": {
+			"!post_object_hook": ""
+		}
 	}
 }

@@ -2,6 +2,7 @@
 	"mode": {
 		"page": {
 			"api": "",
+			"exchange": "json",
 			"header": {
 				"User-Agent": "@{ua}"
 			},
@@ -18,6 +19,7 @@
 		},
 		"id": {
 			"api": "",
+			"exchange": "json",
 			"header": {
 				"User-Agent": "@{ua}"
 			},
@@ -51,6 +53,8 @@
 		"constant": {
 			"@ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
 		},
-		"variable": {}
+		"variable": {
+			"!post_object_hook": "exec_result = ${post_object}"
+		}
 	}
 }

@@ -126,6 +126,9 @@ class TemplateReader:
         self.template_cfg = template_cfg
         self.delimiter_map = delimiter_map
 
+    def set_template_cfg(self, template_cfg):
+        self.template_cfg = template_cfg
+
     def read(self, position_list = None, target_value = None, is_positioner = False, is_variable = False):
         if position_list != None:
             target_value = get_dict_value_by_position_list(self.template_cfg, position_list)

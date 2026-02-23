@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
+from urllib.parse import quote
 from func.http import simple_http_api_request
 from func.json import json_decode, json_encode, json_encode_with_format
+from func.xml import xml_decode
 from func.download import start_download
 from func.log import construct, reconstruct, add_log
 from func.fileio import file_read, file_write, file_splitext, dir_list
@@ -40,9 +42,11 @@ class Service:
         self.allow_template_root = kwargs['allow_template_root']
         self.allow_template_mode = kwargs['allow_template_mode']
         self.allow_template_mode_page = kwargs['allow_template_mode_page']
+        self.allow_template_mode_page_exchange = kwargs['allow_template_mode_page_exchange']
         self.allow_template_mode_page_method = kwargs['allow_template_mode_page_method']
         self.allow_template_mode_page_download = kwargs['allow_template_mode_page_download']
         self.allow_template_mode_id = kwargs['allow_template_mode_id']
+        self.allow_template_mode_id_exchange = kwargs['allow_template_mode_id_exchange']
         self.allow_template_mode_id_method = kwargs['allow_template_mode_id_method']
         self.allow_template_mode_id_download = kwargs['allow_template_mode_id_download']
         self.allow_template_mode_id_op_symbol = kwargs['allow_template_mode_id_op_symbol']
@@ -56,6 +60,8 @@ class Service:
         self.template_dirname = kwargs['template_dirname']
 
         self.args_list = kwargs['args_list']
+
+        self.template_reader = None
 
     def log_construct(self):
         construct(self.path, self.log_level, self.no_print_log)
@@ -162,6 +168,12 @@ class Service:
         elif type(self.template_cfg['mode']['page']['api']) != str or self.template_cfg['mode']['page']['api'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.page.api', type(self.template_cfg['mode']['page']['api']), str), 'Error', debug_info())
             exit()
+        elif type(self.template_cfg['mode']['page']['exchange']) != str or self.template_cfg['mode']['page']['exchange'] in self.null_list:
+            add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.page.exchange', type(self.template_cfg['mode']['page']['exchange']), str), 'Error', debug_info())
+            exit()
+        elif self.template_cfg['mode']['page']['exchange'] not in self.allow_template_mode_page_exchange:
+            add_log("模板 %s 节点取值有误，当前为： %s ，取值范围为： %s" % ('mode.page.exchange', self.template_cfg['mode']['page']['exchange'], json_encode(self.allow_template_mode_page_exchange)), 'Error', debug_info())
+            exit()
         elif type(self.template_cfg['mode']['page']['header']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.page.header', type(self.template_cfg['mode']['page']['header']), dict), 'Error', debug_info())
             exit()
@@ -201,6 +213,12 @@ class Service:
             exit()
         elif type(self.template_cfg['mode']['id']['api']) != str or self.template_cfg['mode']['id']['api'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.api', type(self.template_cfg['mode']['id']['api']), str), 'Error', debug_info())
+            exit()
+        elif type(self.template_cfg['mode']['id']['exchange']) != str or self.template_cfg['mode']['id']['exchange'] in self.null_list:
+            add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.exchange', type(self.template_cfg['mode']['id']['exchange']), str), 'Error', debug_info())
+            exit()
+        elif self.template_cfg['mode']['id']['exchange'] not in self.allow_template_mode_id_exchange:
+            add_log("模板 %s 节点取值有误，当前为： %s ，取值范围为： %s" % ('mode.id.exchange', self.template_cfg['mode']['id']['exchange'], json_encode(self.allow_template_mode_id_exchange)), 'Error', debug_info())
             exit()
         elif type(self.template_cfg['mode']['id']['header']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.id.header', type(self.template_cfg['mode']['id']['header']), dict), 'Error', debug_info())
@@ -280,6 +298,9 @@ class Service:
         elif type(self.template_cfg['advanced']['variable']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('advanced.variable', type(self.template_cfg['advanced']['variable']), dict), 'Error', debug_info())
             exit()
+        elif '!post_object_hook' not in self.template_cfg['advanced']['variable'] or type(self.template_cfg['advanced']['variable']['!post_object_hook']) != str or self.template_cfg['advanced']['variable']['!post_object_hook'] in self.null_list:
+            add_log("模板 %s 节点中不包含必要的参数 %s ，也可能是 %s 的数据类型有误或为空，类型应该为： %s" % ('advanced.variable', '!post_object_hook','advanced.variable.!post_object_hook', str), 'Error', debug_info())
+            exit()
         add_log("添加预设变量： %s" % json_encode(self.template_preset_variables), 'Debug', debug_info())
         self.template_cfg['advanced'].update({'preset':{}})
         for i in self.template_preset_variables:
@@ -346,9 +367,10 @@ class Service:
         add_log("更新预设变量", 'Debug', debug_info())
         self.set_template_preset_variable('tags', self.tags)
         self.set_template_preset_variable('page', self.start)
+        self.set_template_preset_variable('retry_max', self.retry_max)
         self.set_template_preset_variable('proxy', self.proxy['http'])
         self.set_template_preset_variable('index', 0)
-        self.template_reader = TemplateReader(self.template_cfg, self.template_delimiter_map)
+        self.set_template_preset_variable('post_object', '')
         add_log(self.template_cfg, 'Debug', debug_info())
         add_log("模板检查通过", 'Debug', debug_info())
 
@@ -369,7 +391,10 @@ class Service:
 
     def set_template_config(self, target, value):
         exec('self.template_cfg' + target + ' = value')
-        self.template_reader = TemplateReader(self.template_cfg, self.template_delimiter_map)
+        if self.template_reader:
+            self.template_reader.set_template_cfg(self.template_cfg)
+        else:
+            self.template_reader = TemplateReader(self.template_cfg, self.template_delimiter_map)
         return True
 
     def get_mode(self):
@@ -405,7 +430,10 @@ class Service:
                 request_header = self.template_reader.read(['mode', 'page', 'header'])
                 request_data = self.template_reader.read(['mode', 'page', 'data'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
-                request_result = json_decode(request_result) # json2list
+                if self.template_reader.read(['mode', 'page', 'exchange']) == 'json':
+                    request_result = json_decode(request_result)
+                elif self.template_reader.read(['mode', 'page', 'exchange']) == 'xml':
+                    request_result = xml_decode(request_result)
                 if isinstance(request_result, str):
                     add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("第 %s 页图片列表获取成功" % page_count, 'Info', debug_info())
@@ -418,6 +446,9 @@ class Service:
                 download_info = []
                 for i in range(0, len(request_result)): # 将图片链接添加到列表
                     self.set_template_preset_variable('index', i)
+                    self.set_template_preset_variable('post_object', request_result[i])
+                    request_result[i] = self.template_reader.read(['advanced', 'variable', '!post_object_hook'], is_variable = True)
+                    self.set_template_preset_variable('post_object', request_result[i])
                     if self.template_reader.read(['advanced', 'positioner', '#file_url'], is_positioner = True):
                         download_info.append({
                                 'positioner': {
@@ -447,7 +478,10 @@ class Service:
                 request_header = self.template_reader.read(['mode', 'page', 'header'])
                 request_data = self.template_reader.read(['mode', 'page', 'data'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
-                request_result = json_decode(request_result)
+                if self.template_reader.read(['mode', 'page', 'exchange']) == 'json':
+                    request_result = json_decode(request_result)
+                elif self.template_reader.read(['mode', 'page', 'exchange']) == 'xml':
+                    request_result = xml_decode(request_result)
                 if isinstance(request_result, str):
                     add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("第 %s 页图片列表获取成功" % i, 'Info', debug_info())
@@ -460,6 +494,9 @@ class Service:
                 download_info = []
                 for j in range(0, len(request_result)):
                     self.set_template_preset_variable('index', j)
+                    self.set_template_preset_variable('post_object', request_result[j])
+                    request_result[j] = self.template_reader.read(['advanced', 'variable', '!post_object_hook'], is_variable = True)
+                    self.set_template_preset_variable('post_object', request_result[j])
                     if self.template_reader.read(['advanced', 'positioner', '#file_url'], is_positioner = True):
                         download_info.append({
                                 'positioner': {
@@ -496,7 +533,10 @@ class Service:
                 request_data = self.template_reader.read(['mode', 'id', 'data'])
                 request_op_symbol = self.template_reader.read(['mode', 'id', 'op_symbol'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
-                request_result = json_decode(request_result)
+                if self.template_reader.read(['mode', 'page', 'exchange']) == 'json':
+                    request_result = json_decode(request_result)
+                elif self.template_reader.read(['mode', 'page', 'exchange']) == 'xml':
+                    request_result = xml_decode(request_result)
                 if isinstance(request_result, str):
                     add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("第 %s 页图片列表获取成功" % page_count, 'Info', debug_info())
@@ -516,6 +556,9 @@ class Service:
                 download_info = []
                 for i in range(0, len(request_result)):
                     self.set_template_preset_variable('index', i)
+                    self.set_template_preset_variable('post_object', request_result[i])
+                    request_result[i] = self.template_reader.read(['advanced', 'variable', '!post_object_hook'], is_variable = True)
+                    self.set_template_preset_variable('post_object', request_result[i])
                     if self.template_reader.read(['advanced', 'positioner', '#id'], is_positioner = True) >= self.start: # 如果本次迭代的图片ID在设定的范围中则将图片链接添加到列表
                         if self.template_reader.read(['advanced', 'positioner', '#file_url'], is_positioner = True):
                             download_info.append({
@@ -550,7 +593,7 @@ class Service:
                 echo_id = self.end if loop_count == 1 else page_end_id
                 add_log("正在获取图片ID %s %s 的图片列表" % (echo_op_symbol, echo_id), 'Info', debug_info())
                 request_op_symbol = self.template_reader.read(['mode', 'id', 'op_symbol'])
-                id_tag = request_op_symbol['id_range'] + request_op_symbol['lt'] + (str(self.end + 1) if loop_count == 1 else str(page_end_id))
+                id_tag = request_op_symbol['id_range'] + quote(request_op_symbol['lt']) + (str(self.end + 1) if loop_count == 1 else str(page_end_id))
                 self.set_template_preset_variable('page', 1)
                 self.set_template_preset_variable('tags', self.tags + "+" + id_tag if self.tags not in self.null_list else id_tag)
                 request_api = self.template_reader.read(['mode', 'id', 'api'])
@@ -558,7 +601,10 @@ class Service:
                 request_header = self.template_reader.read(['mode', 'id', 'header'])
                 request_data = self.template_reader.read(['mode', 'id', 'data'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
-                request_result = json_decode(request_result)
+                if self.template_reader.read(['mode', 'page', 'exchange']) == 'json':
+                    request_result = json_decode(request_result)
+                elif self.template_reader.read(['mode', 'page', 'exchange']) == 'xml':
+                    request_result = xml_decode(request_result)
                 if isinstance(request_result, str):
                     add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("图片列表获取成功", 'Info', debug_info())
@@ -580,6 +626,9 @@ class Service:
                 download_info = []
                 for i in range(0, len(request_result)):
                     self.set_template_preset_variable('index', i)
+                    self.set_template_preset_variable('post_object', request_result[i])
+                    request_result[i] = self.template_reader.read(['advanced', 'variable', '!post_object_hook'], is_variable = True)
+                    self.set_template_preset_variable('post_object', request_result[i])
                     if self.template_reader.read(['advanced', 'positioner', '#id'], is_positioner = True) <= self.end and self.template_reader.read(['advanced', 'positioner', '#id'], is_positioner = True) >= self.start: # 如果本次迭代的图片ID在设定的范围中则将图片链接添加到列表
                         if self.template_reader.read(['advanced', 'positioner', '#file_url'], is_positioner = True):
                             download_info.append({
