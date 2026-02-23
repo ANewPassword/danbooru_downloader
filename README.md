@@ -1,6 +1,6 @@
 ## 它可以做什么
 
-此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据`页面ID`/`图片ID`区间下载两种下载模式，脚本预设了 danbooru/gelbooru/yande.re/konachan/rule34/sankakucomplex/zerochan/animepictures 等常见的基于 danbooru 和 gelbooru 程序搭建的图库的网站爬虫模板，另支持自定义设置`下载模板`、`搜索/排除标签`、`线程数`、`自定义保存路径`、`http代理`、`下载查重`、`校验文件完整性`、`保存元数据`等强大功能。
+此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据`页面ID`/`图片ID`区间下载两种下载模式，脚本预设了 danbooru/gelbooru/yande.re/konachan/rule34/sankakucomplex/safebooru/zerochan/animepictures 等常见的基于 danbooru 和 gelbooru 程序搭建的图库的网站爬虫模板，另支持自定义设置`下载模板`、`搜索/排除标签`、`线程数`、`自定义保存路径`、`http代理`、`下载查重`、`校验文件完整性`、`保存元数据`等强大功能。
 
 ---
 
@@ -295,7 +295,7 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 
 ##### `positioner`
 
-定位器，分隔符为`#`。定义如何从获取到的数据中提取信息，其中`#root`、`#id`、`#md5`和`#file_url`是必要的。
+定位器，分隔符为`#`。定义如何从获取到的数据中提取信息，可以按需添加自己所需的数据定位器，其中`#root`、`#id`、`#md5`和`#file_url`是必要的。
 
 - `#root`：根节点，用于指示数组的根路径
 - `#id`：提取 ID 的路径
@@ -338,6 +338,10 @@ rule34 的 api 返回的 hash 有可能与实际文件 hash 不一致，建议�
 ---
 
 ## 更新日志
+
+### V2.1.1
+
+1. 添加了 safebooru 网站模板。
 
 ### V2.1.0
 

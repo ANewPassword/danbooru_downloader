@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 # 全局常量
-VERSION = "V2.1.0"
+VERSION = "V2.1.1"
 AUTHOR = "MoCha"
-LAST_REVISE_TIME = "2026-02-23 17:57:37"
+LAST_REVISE_TIME = "2026-02-23 18:31:55"
 
 # 部分参数取值范围
 allow_mode = ["id", "page", "file", "copyright"]
@@ -419,7 +419,7 @@ default_make_config = False
 default_no_print_log = False
 
 # 帮助文本
-script_description = "此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据页面ID/图片ID区间下载两种下载模式，脚本预设了danbooru/gelbooru/yande.re/konachan/rule34/sankakucomplex等常见的基于danbooru和gelbooru程序搭建的图库的网站爬虫模板，另支持自定义设置下载模板、搜索/排除标签、线程数、自定义保存路径、http代理、下载查重、校验文件完整性、保存元数据等强大功能。"
+script_description = "此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据页面ID/图片ID区间下载两种下载模式，脚本预设了danbooru/gelbooru/yande.re/konachan/rule34/sankakucomplex/safebooru/zerochan/animepictures等常见的基于danbooru和gelbooru程序搭建的图库的网站爬虫模板，另支持自定义设置下载模板、搜索/排除标签、线程数、自定义保存路径、http代理、下载查重、校验文件完整性、保存元数据等强大功能。"
 
 mode_help = "运行模式\r\n取值范围：\r\nid：通过ID下载\r\npage：通过页码下载\r\nfile：使用json格式的配置文件运行，同时需要指定file-config-path\r\ncopyright：输出版权信息"
 template_help = "运行模板"
