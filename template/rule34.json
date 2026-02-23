@@ -1,17 +1,23 @@
 {
 	"mode": {
 		"page": {
-			"api": "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&pid=!{real_page_id}&tags=${tags}",
+			"api": "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&pid=!{real_page_id}&tags=${tags}&api_key=@{api_key}&user_id=@{user_id}",
 			"download": {
 				"metadata": "!{all_metadata_format}",
-				"filename": "#{id}.!{file_ext_format}"
+				"filename": "#{id}.!{file_ext_format}",
+				"header": {
+					"Referer": "https://rule34.xxx/"
+				}
 			}
 		},
 		"id": {
-			"api": "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&pid=!{real_page_id}&tags=${tags}",
+			"api": "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&pid=!{real_page_id}&tags=${tags}&api_key=@{api_key}&user_id=@{user_id}",
 			"download": {
 				"metadata": "!{all_metadata_format}",
-				"filename": "#{id}.!{file_ext_format}"
+				"filename": "#{id}.!{file_ext_format}",
+				"header": {
+					"Referer": "https://rule34.xxx/"
+				}
 			}
 		}
 	},
@@ -20,6 +26,10 @@
 			"#md5": "[${index}]['hash']",
 			"#all_metadata": "[${index}]",
 			"#file_ext": "[${index}]['image']"
+		},
+		"constant": {
+			"@api_key": "在Account Options中获取到的api key",
+			"@user_id": "在Account Options中获取到的user id"
 		},
 		"variable": {
 			"!real_page_id": "exec_result = int(${page}) - 1",

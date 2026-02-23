@@ -406,6 +406,8 @@ class Service:
                 request_data = self.template_reader.read(['mode', 'page', 'data'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
                 request_result = json_decode(request_result) # json2list
+                if isinstance(request_result, str):
+                    add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("第 %s 页图片列表获取成功" % page_count, 'Info', debug_info())
                 self.set_template_runtime_variable('scrap_result', request_result)
                 request_result = self.template_reader.read(['advanced', 'positioner', '#root'], is_positioner = True)
@@ -446,6 +448,8 @@ class Service:
                 request_data = self.template_reader.read(['mode', 'page', 'data'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
                 request_result = json_decode(request_result)
+                if isinstance(request_result, str):
+                    add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("第 %s 页图片列表获取成功" % i, 'Info', debug_info())
                 self.set_template_runtime_variable('scrap_result', request_result)
                 request_result = self.template_reader.read(['advanced', 'positioner', '#root'], is_positioner = True)
@@ -493,6 +497,8 @@ class Service:
                 request_op_symbol = self.template_reader.read(['mode', 'id', 'op_symbol'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
                 request_result = json_decode(request_result)
+                if isinstance(request_result, str):
+                    add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("第 %s 页图片列表获取成功" % page_count, 'Info', debug_info())
                 self.set_template_runtime_variable('scrap_result', request_result)
                 request_result = self.template_reader.read(['advanced', 'positioner', '#root'], is_positioner = True)
@@ -553,6 +559,8 @@ class Service:
                 request_data = self.template_reader.read(['mode', 'id', 'data'])
                 request_result = simple_http_api_request(request_api, request_method, self.retry_max, request_header, request_data, self.proxy)
                 request_result = json_decode(request_result)
+                if isinstance(request_result, str):
+                    add_log("API 返回内容格式可能有误：%s" % request_result, 'Debug', debug_info())
                 add_log("图片列表获取成功", 'Info', debug_info())
                 self.set_template_runtime_variable('scrap_result', request_result)
                 request_result = self.template_reader.read(['advanced', 'positioner', '#root'], is_positioner = True)
