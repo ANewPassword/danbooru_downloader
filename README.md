@@ -1,6 +1,6 @@
 ## 它可以做什么
 
-此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据`页面ID`/`图片ID`区间下载两种下载模式，脚本预设了 danbooru/gelbooru/yande.re/konachan/rule34/sankakucomplex/safebooru/zerochan/animepictures 等常见的基于 danbooru 和 gelbooru 程序搭建的图库的网站爬虫模板，另支持自定义设置`下载模板`、`搜索/排除标签`、`线程数`、`自定义保存路径`、`http代理`、`下载查重`、`校验文件完整性`、`保存元数据`等强大功能。
+此脚本可通过 danbooru API 获取图片列表并以多线程的方式批量下载图片、动图和视频，可选择根据`页面ID`/`图片ID`区间下载两种下载模式，脚本预设了 danbooru / gelbooru / yande.re / konachan / rule34 / sankakucomplex / safebooru / zerochan / animepictures 等常见的基于 danbooru 和 gelbooru 程序搭建的图库的网站爬虫模板，另支持自定义设置`下载模板`、`搜索/排除标签`、`线程数`、`自定义保存路径`、`http代理`、`下载查重`、`校验文件完整性`、`保存元数据`等强大功能。
 
 ---
 
@@ -124,7 +124,7 @@ python3 main.py -m file "--file-config-path" "./config.json"
 
 与此同时，`./config.json`的内容：
 
-```text
+```json
 {
 	"args": {
 		"mode": "page",
@@ -159,7 +159,7 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 
 与此同时，`./config.json`的内容：
 
-```text
+```json
 {
 	"args": {
 		"mode": "page",
@@ -178,7 +178,7 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 
 ### 模板参数
 
-```text
+```json
 {
 	"mode": {
 		"page": {
@@ -276,11 +276,58 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 
 #### 高级设置（`advanced`）
 
-高级设置是网站模板能够灵活扩展的关键，该字段包含`positioner`、`constant`和`variable`。此字段下每个字段都有其独有的分隔符（delimiter）用以在引用时区分，引用方法为`分隔符+{+名称+}`，但在定义时应为`分隔符+名称`，名称仅应包含英文字母、数字和下划线且首字符不能为数字，这实际上类似于模板字符串。
+高级设置是网站模板能够灵活扩展的关键，该字段包含`positioner`、`constant`和`variable`。此外，`preset` 虽然不由用户定义，但同样属于高级设置的一部分，由程序在运行时自动注入。此字段下每个字段都有其独有的分隔符（delimiter）用以在引用时区分，引用方法为`分隔符+{+名称+}`，但在定义时应为`分隔符+名称`，名称仅应包含英文字母、数字和下划线且首字符不能为数字，这实际上类似于模板字符串。
+
+四种类型的对照如下：
+
+| 类型 | 分隔符 | 定义格式 | 引用格式 | 说明 |
+| :--: | :--: | :--: | :--: | :-- |
+| `preset` | `$` | 由程序自动注入 | `${name}` | 预设变量，如页码、搜索标签等运行时参数 |
+| `positioner` | `#` | `"#name": "表达式"` | `#{name}` | 定位器，从 API 响应数据中提取字段的路径表达式 |
+| `constant` | `@` | `"@name": "值"` | `@{name}` | 静态常量，如 Cookie、用户名密码等固定值 |
+| `variable` | `!` | `"!name": "代码"` | `!{name}` | 动态变量，Python 代码片段，通过 `exec_result` 返回结果 |
 
 高级设置下定义的内容可以在大部分字段中自由引用，这同样包含嵌套引用，甚至可以在部分字段的字段名中引用，高级设置的优先级从高至低分别为：`preset`->`positioner`->`constant`->`variable`，这代表了如果在嵌套引用时，`preset`会最先被解析，而`variable`将被最后解析，所有被引用内容在解析后都会保留其本来的数据类型。
 
-**关于转义：如果模板字段内的静态字符串恰巧与高级设置内的引用格式相冲突，此时可以使用转义，例如需要表达"11${abc}22"，但字符串片段"${abc}"与引用预设变量的格式冲突，可以在其前面加上一个与对应的分隔符相同的字符以将其转义，即"$${abc}"，完整字符串为"11$${abc}22"**。
+**关于转义：如果模板字段内的静态字符串恰巧与高级设置内的引用格式相冲突，此时可以使用转义，例如需要表达`11${abc}22`，但字符串片段`${abc}`与引用预设变量的格式冲突，可以在其前面加上一个与对应的分隔符相同的字符以将其转义，即`$${abc}`，所以输入的完整字符串为`11$${abc}22`**。
+
+以下是一个来自 konachan 模板的实际片段，展示了如何在模板字段中引用各类高级设置：
+
+```json
+{
+    "mode": {
+        "page": {
+            "api": "https://konachan.com/post.json?limit=1000&tags=${tags}&page=${page}",
+            "header": {
+                "Cookie": "@{cf_cookie}",
+                "User-Agent": "@{cf_ua}"
+            },
+            "download": {
+                "filename": "#{id}.!{file_ext_format}"
+            }
+        }
+    }
+}
+```
+
+- `api` 中的 `${tags}` 和 `${page}` 引用了预设变量，程序会将其替换为当前的搜索标签和页码
+- `header` 中的 `@{cf_cookie}` 和 `@{cf_ua}` 引用了静态常量，程序会将其替换为 `constant` 中定义的对应值
+- `filename` 中的 `#{id}` 引用了定位器，程序会将其解析为当前图片的 ID 值；`!{file_ext_format}` 引用了动态变量，程序会执行对应的代码片段并将返回值填入
+
+关于嵌套引用，以 sankakucomplex 模板为例，动态变量 `!auth` 中引用了多个静态常量：
+
+```json
+"constant": {
+    "@auth_api": "https://sankakuapi.com/auth/token",
+    "@auth_username": "你的用户名",
+    "@auth_password": "你的密码"
+},
+"variable": {
+    "!auth": "... response = post(@{auth_api}, ...) ...\ndata = '{...}' % (@{auth_username}, @{auth_password})\n... exec_result = ..."
+}
+```
+
+当程序解析 `!auth` 时，由于 `constant` 的优先级高于 `variable`，其中的 `@{auth_api}`、`@{auth_username}`、`@{auth_password}` 会先被替换为对应的常量值，然后再执行替换后的代码片段。同理，如果动态变量中引用了定位器（如 `#{all_metadata}`），定位器也会先于动态变量被解析。
 
 ##### `preset`
 
@@ -302,15 +349,45 @@ python3 main.py -m file "--file-config-path" "./config.json" -p "./yande" -e 100
 - `#md5`：提取 MD5 值的路径
 - `#file_url`：提取文件 URL 的路径
 
+> [!NOTE]
+> 定位器的值是路径访问表达式，而非普通字符串。当定位器被引用时，程序会将其解析为对 API 响应数据的访问路径，提取对应字段的实际数据，而不是直接返回定位器的原始文本。
+>
+> 例如，假设 API 返回了以下 JSON：
+> ```json
+> [{"id": 12345, "md5": "abc", "file_url": "https://..."},{...}]
+> ```
+> 定位器 `#id` 的值为 `[${index}]['id']`，当在模板中引用 `#{id}` 时（假设当前遍历下标 `${index}` 为 `0`），程序会沿路径 `[0]['id']` 访问响应数据，最终返回 `12345`，而不是字符串 `"[0]['id']"`。
+
 ##### `constant`
 
 静态常量，分隔符为`@`。可以在此处定义 Cookie、用户名和密码等内容。**常量无法引用任何内容，只能为静态字符串。**
+
+例如，konachan 模板需要通过 Cloudflare 质询，可以将 Cookie 和 UA 定义为常量：
+
+```json
+"constant": {
+    "@cf_cookie": "手动通过Cloudflare质询后获取到的Cookie",
+    "@cf_ua": "通过Cloudflare质询时的浏览器UA"
+}
+```
+
+随后即可在模板的其他字段中通过 `@{cf_cookie}` 和 `@{cf_ua}` 引用它们。
 
 ##### `variable`
 
 动态变量，分隔符为`!`。动态变量实际上是 Python 代码片段，需要返回（return）的内容需要被赋值给名为`exec_result`的变量，而不是使用`return`关键字。
 
 其中`!post_object_hook`是一个特殊的内置动态变量，它会在遍历图片列表时对每个条目执行一次。可以利用它对 API 返回的原始数据进行预处理，例如发起额外的网络请求获取详细信息、拼接下载链接等。`!post_object_hook`的返回值会覆盖当前的`$post_object`。如果不需要预处理，保持默认值`exec_result = ${post_object}`（直接透传）即可。
+
+例如，konachan 模板中定义了一个从文件 URL 中提取扩展名的动态变量：
+
+```json
+"variable": {
+    "!file_ext_format": "exec_result = #{file_ext}.split('.')[-1]"
+}
+```
+
+这段代码引用了定位器 `#{file_ext}` 获取到文件 URL 字符串，然后通过 `.split('.')[-1]` 取出最后一段作为扩展名，最终将结果赋值给 `exec_result`。随后可以在模板中通过 `!{file_ext_format}` 引用该变量的返回值。
 
 > [!WARNING]
 > **`variable` 是一个强大但极度危险的组件。** 其内容会作为 Python 代码直接在本地执行，理论上可以执行任意系统操作。**除非你完全读懂了模板中每一条 `variable` 的含义，否则绝对不要使用来自网络上不明来源的第三方模板。** 恶意模板可能借此窃取数据、破坏文件或执行其他危险操作。
@@ -338,6 +415,8 @@ rule34 的 api 返回的 hash 有可能与实际文件 hash 不一致，建议�
 ---
 
 ## 更新日志
+
+<details>
 
 ### V2.1.1
 
@@ -449,3 +528,4 @@ rule34 的 api 返回的 hash 有可能与实际文件 hash 不一致，建议�
 ### V1.0.0
 
 1. 正式版上线。
+</details>
