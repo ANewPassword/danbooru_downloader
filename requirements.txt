@@ -1,3 +1,5 @@
 colorlog==6.6.0
 requests==2.28.1
 curl_cffi==0.13.0
+json_repair==0.25.2
+xmltodict==0.13.0
