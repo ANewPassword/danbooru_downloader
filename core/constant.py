@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 # 全局常量
-VERSION = "V2.1.1"
+VERSION = "V2.1.2"
 AUTHOR = "MoCha"
-LAST_REVISE_TIME = "2026-02-23 18:31:55"
+LAST_REVISE_TIME = "2026-03-01 20:59:31"
 
 # 部分参数取值范围
 allow_mode = ["id", "page", "file", "copyright"]

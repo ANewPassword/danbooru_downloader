@@ -81,7 +81,7 @@ try:
         pass
     else:
         add_log("指定的模式有误：%s " % args['mode'], 'Error', debug_info())
-        exit()
+        sys.exit(1)
 
     main.bye()
 
@@ -89,13 +89,17 @@ except Exception as e:
     msg1 = "%s: %s" % (e.__class__.__name__, e)
     msg2 = "请检查上方堆栈跟踪信息，此跟踪信息不会写入到日志"
 
-    if callable(globals().get("add_log")): # 判断add_log()是否已声明
+    try:
         add_log(msg1, 'Error', debug_info())
         add_log(msg2, 'Error', debug_info(True))
-    else: # 若add_log()未声明则使用print打印错误，以免add_log()的未声明报错掩盖真正的报错
+    except Exception:  # 若日志记录失败则使用print打印错误，以免日志系统的报错掩盖真正的报错
         print("Error:", msg1)
         print("Error:", msg2)
 
-    exit()
+    sys.exit(1)
 except KeyboardInterrupt:
-    add_log("用户手动退出", 'Warn', debug_info())
+    try:
+        add_log("用户手动退出", 'Warn', debug_info())
+    except Exception:
+        print("Warn: 用户手动退出")
+    sys.exit(0)

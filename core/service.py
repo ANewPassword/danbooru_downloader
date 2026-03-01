@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from copy import deepcopy
 from urllib.parse import quote
 from func.http import simple_http_api_request
@@ -82,7 +83,7 @@ class Service:
                 file_write(self.file_config_path, default_config_json, mode="w")
                 add_log("成功创建空白配置文件到 %s" % self.file_config_path, 'Info', debug_info())
                 self.bye()
-                exit()
+                sys.exit(1)
             else:
                 try:
                     file_cfg = json_decode(file_read(self.file_config_path))['args']
@@ -113,24 +114,24 @@ class Service:
         add_log("检查运行模式设置", 'Debug', debug_info())
         if self.mode not in self.allow_mode_after_process_file: # 因为之前已经对file模式进行了处理，所以file模式自此处开始不再是可接受的模式
             add_log("指定的模式有误： %s " % self.mode, 'Error', debug_info())
-            exit()
+            sys.exit(1)
         add_log("检查运行模板设置", 'Debug', debug_info())
         add_log("获取可用模板", 'Debug', debug_info())
         template_list = self.get_available_template()
         add_log("可用模板： %s" % json_encode(template_list), 'Debug', debug_info())
         if self.template not in template_list:
             add_log("指定的模板有误： %s ，模板不在可用模板列表中" % self.template, 'Error', debug_info())
-            exit()
+            sys.exit(1)
         add_log("检查下载范围设置", 'Debug', debug_info())
         if self.start == 0: # 避免重复请求和下载
             self.start = 1
             add_log("start参数有误，为避免重复请求和下载，已修正为 1", 'Warn', debug_info())
         if (self.start > self.end) and (self.end != -1):
             add_log("开始ID： %s 不能大于结束ID： %s" % (self.start, self.end), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         if self.start < 0:
             add_log("start参数取值不正确，参数取值范围为非负整数", 'Error', debug_info(), debug_info())
-            exit()
+            sys.exit(1)
         add_log("格式化代理设置", 'Debug', debug_info())
         if self.proxy != "":
             self.proxy = {
@@ -146,7 +147,7 @@ class Service:
         add_log("检查最大网络请求重试次数设置", 'Debug', debug_info())
         if self.retry_max < -1:
             add_log("retry-max 参数取值不正确，参数取值范围为整数且大于等于 -1", 'Error', debug_info())
-            exit()
+            sys.exit(1)
         add_log("运行参数预检查通过", 'Debug', debug_info())
 
     def template_check(self):
@@ -157,150 +158,150 @@ class Service:
         add_log("检查模板结构", 'Debug', debug_info())
         if list(self.template_cfg.keys()) != self.allow_template_root:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('_root', json_encode(list(self.template_cfg.keys())), json_encode(self.allow_template_root)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif list(self.template_cfg['mode'].keys()) != self.allow_template_mode:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('mode', json_encode(list(self.template_cfg['mode'].keys())), json_encode(self.allow_template_mode)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         # page
         elif list(self.template_cfg['mode']['page'].keys()) != self.allow_template_mode_page:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('mode.page', json_encode(list(self.template_cfg['mode']['page'].keys())), json_encode(self.allow_template_mode_page)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['api']) != str or self.template_cfg['mode']['page']['api'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.page.api', type(self.template_cfg['mode']['page']['api']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['exchange']) != str or self.template_cfg['mode']['page']['exchange'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.page.exchange', type(self.template_cfg['mode']['page']['exchange']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['page']['exchange'] not in self.allow_template_mode_page_exchange:
             add_log("模板 %s 节点取值有误，当前为： %s ，取值范围为： %s" % ('mode.page.exchange', self.template_cfg['mode']['page']['exchange'], json_encode(self.allow_template_mode_page_exchange)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['header']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.page.header', type(self.template_cfg['mode']['page']['header']), dict), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['method']) != str or self.template_cfg['mode']['page']['method'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.page.method', type(self.template_cfg['mode']['page']['method']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['page']['method'] not in self.allow_template_mode_page_method:
             add_log("模板 %s 节点取值有误，当前为： %s ，取值范围为： %s" % ('mode.page.method', self.template_cfg['mode']['page']['method'], json_encode(self.allow_template_mode_page_method)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['data']) != str and self.template_cfg['mode']['page']['data'] != None:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s 或 %s" % ('mode.page.data', type(self.template_cfg['mode']['page']['data']), str, None), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif list(self.template_cfg['mode']['page']['download'].keys()) != self.allow_template_mode_page_download:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('mode.page.download', json_encode(list(self.template_cfg['mode']['page']['download'].keys())), json_encode(self.allow_template_mode_page_download)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['download']['metadata']) != str:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.page.download.metadata', type(self.template_cfg['mode']['page']['download']['metadata']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['page']['download']['metadata'] in self.null_list and self.with_metadata:
             add_log("当记录元数据时，模板 %s 节点不能为空" % ('mode.page.download.metadata'), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['download']['filename']) != str or self.template_cfg['mode']['page']['download']['filename'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.page.download.filename', type(self.template_cfg['mode']['page']['download']['filename']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['download']['metadata_filename']) != str:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.page.download.metadata_filename', type(self.template_cfg['mode']['page']['download']['metadata_filename']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['page']['download']['metadata_filename'] in self.null_list and self.with_metadata:
             add_log("当记录元数据时，模板 %s 节点不能为空" % ('mode.page.download.metadata_filename'), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['page']['download']['header']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.page.download.header', type(self.template_cfg['mode']['page']['download']['header']), dict), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         # id
         elif list(self.template_cfg['mode']['id'].keys()) != self.allow_template_mode_id:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('mode.id', json_encode(list(self.template_cfg['mode']['id'].keys())), json_encode(self.allow_template_mode_id)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['api']) != str or self.template_cfg['mode']['id']['api'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.api', type(self.template_cfg['mode']['id']['api']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['exchange']) != str or self.template_cfg['mode']['id']['exchange'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.exchange', type(self.template_cfg['mode']['id']['exchange']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['id']['exchange'] not in self.allow_template_mode_id_exchange:
             add_log("模板 %s 节点取值有误，当前为： %s ，取值范围为： %s" % ('mode.id.exchange', self.template_cfg['mode']['id']['exchange'], json_encode(self.allow_template_mode_id_exchange)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['header']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.id.header', type(self.template_cfg['mode']['id']['header']), dict), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['method']) != str or self.template_cfg['mode']['id']['method'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.method', type(self.template_cfg['mode']['id']['method']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['id']['method'] not in self.allow_template_mode_id_method:
             add_log("模板 %s 节点取值有误，当前为： %s ，取值范围为： %s" % ('mode.id.method', self.template_cfg['mode']['id']['method'], json_encode(self.allow_template_mode_id_method)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['data']) != str and self.template_cfg['mode']['page']['data'] != None:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s 或 %s" % ('mode.id.data', type(self.template_cfg['mode']['id']['data']), str, None), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif list(self.template_cfg['mode']['id']['download'].keys()) != self.allow_template_mode_id_download:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('mode.id.download', json_encode(list(self.template_cfg['mode']['id']['download'].keys())), json_encode(self.allow_template_mode_id_download)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['download']['metadata']) != str:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.id.download.metadata', type(self.template_cfg['mode']['id']['download']['metadata']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['id']['download']['metadata'] in self.null_list and self.with_metadata:
             add_log("当记录元数据时，模板 %s 节点不能为空" % ('mode.id.download.metadata'), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['download']['filename']) != str  or self.template_cfg['mode']['id']['download']['filename'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.download.filename', type(self.template_cfg['mode']['id']['download']['filename']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['download']['metadata_filename']) != str:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.id.download.metadata_filename', type(self.template_cfg['mode']['id']['download']['metadata_filename']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif self.template_cfg['mode']['id']['download']['metadata_filename'] in self.null_list and self.with_metadata:
             add_log("当记录元数据时，模板 %s 节点不能为空" % ('mode.id.download.metadata_filename'), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['download']['header']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('mode.id.download.header', type(self.template_cfg['mode']['id']['download']['header']), dict), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif list(self.template_cfg['mode']['id']['op_symbol'].keys()) != self.allow_template_mode_id_op_symbol:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('mode.id.op_symbol', json_encode(list(self.template_cfg['mode']['id']['op_symbol'].keys())), json_encode(self.allow_template_mode_id_op_symbol)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['op_symbol']['id']) != str or self.template_cfg['mode']['id']['op_symbol']['id'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.op_symbol.id', type(self.template_cfg['mode']['id']['op_symbol']['id']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['op_symbol']['id_range']) != str or self.template_cfg['mode']['id']['op_symbol']['id_range'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.op_symbol.id_range', type(self.template_cfg['mode']['id']['op_symbol']['id_range']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['op_symbol']['eq']) != str or self.template_cfg['mode']['id']['op_symbol']['eq'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.op_symbol.eq', type(self.template_cfg['mode']['id']['op_symbol']['eq']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['op_symbol']['lt']) != str or self.template_cfg['mode']['id']['op_symbol']['lt'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.op_symbol.lt', type(self.template_cfg['mode']['id']['op_symbol']['lt']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif type(self.template_cfg['mode']['id']['op_symbol']['gt']) != str or self.template_cfg['mode']['id']['op_symbol']['gt'] in self.null_list:
             add_log("模板 %s 节点数据类型有误或为空，当前类型为： %s ，应该为： %s" % ('mode.id.op_symbol.gt', type(self.template_cfg['mode']['id']['op_symbol']['gt']), str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif list(self.template_cfg['advanced'].keys()) != self.allow_template_advanced:
             add_log("模板 %s 节点结构有误，当前为： %s ，应该为： %s" % ('advanced', json_encode(list(self.template_cfg['advanced'].keys())), json_encode(self.allow_template_advanced)), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         # positioner
         elif type(self.template_cfg['advanced']['positioner']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('advanced.positioner', type(self.template_cfg['advanced']['positioner']), dict), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif '#root' not in self.template_cfg['advanced']['positioner'] or type(self.template_cfg['advanced']['positioner']['#root']) != str:
             add_log("模板 %s 节点中不包含必要的参数 %s ，也可能是 %s 的数据类型有误，类型应该为： %s" % ('advanced.positioner', '#root','advanced.positioner.#root', str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif '#id' not in self.template_cfg['advanced']['positioner'] or type(self.template_cfg['advanced']['positioner']['#id']) != str or self.template_cfg['advanced']['positioner']['#id'] in self.null_list:
             add_log("模板 %s 节点中不包含必要的参数 %s ，也可能是 %s 的数据类型有误或为空，类型应该为： %s" % ('advanced.positioner', '#id','advanced.positioner.#id', str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif '#md5' not in self.template_cfg['advanced']['positioner'] or type(self.template_cfg['advanced']['positioner']['#md5']) != str or self.template_cfg['advanced']['positioner']['#md5'] in self.null_list:
             add_log("模板 %s 节点中不包含必要的参数 %s ，也可能是 %s 的数据类型有误或为空，类型应该为： %s" % ('advanced.positioner', '#md5','advanced.positioner.#md5', str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif '#file_url' not in self.template_cfg['advanced']['positioner'] or type(self.template_cfg['advanced']['positioner']['#file_url']) != str or self.template_cfg['advanced']['positioner']['#file_url'] in self.null_list:
             add_log("模板 %s 节点中不包含必要的参数 %s ，也可能是 %s 的数据类型有误或为空，类型应该为： %s" % ('advanced.positioner', '#file_url','advanced.positioner.#file_url', str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         # constant
         elif type(self.template_cfg['advanced']['constant']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('advanced.constant', type(self.template_cfg['advanced']['constant']), dict), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         # variable
         elif type(self.template_cfg['advanced']['variable']) != dict:
             add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('advanced.variable', type(self.template_cfg['advanced']['variable']), dict), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         elif '!post_object_hook' not in self.template_cfg['advanced']['variable'] or type(self.template_cfg['advanced']['variable']['!post_object_hook']) != str or self.template_cfg['advanced']['variable']['!post_object_hook'] in self.null_list:
             add_log("模板 %s 节点中不包含必要的参数 %s ，也可能是 %s 的数据类型有误或为空，类型应该为： %s" % ('advanced.variable', '!post_object_hook','advanced.variable.!post_object_hook', str), 'Error', debug_info())
-            exit()
+            sys.exit(1)
         add_log("添加预设变量： %s" % json_encode(self.template_preset_variables), 'Debug', debug_info())
         self.template_cfg['advanced'].update({'preset':{}})
         for i in self.template_preset_variables:
@@ -309,14 +310,14 @@ class Service:
         for i in self.template_cfg['advanced']:
             if (len(self.template_cfg['advanced'][i]) != len(set(self.template_cfg['advanced'][i]))):
                 add_log("模板 %s 节点上有重复的定位器、常量或变量" % 'advanced.' + i, 'Error', debug_info())
-                exit()
+                sys.exit(1)
             for j in self.template_cfg['advanced'][i]:
                 if not check_template_variable_name(j, self.template_delimiter_map[i]):
                     add_log("模板 %s 节点不符合命名规范：第一个字符应为 %s ，第二个字符应为英文大小写字母或下划线，其余字符应为英文大小写字母、下划线或数字，字符串不短于 2 位" % ('advanced.' + i + '.' + j, self.template_delimiter_map[i]), 'Error', debug_info())
-                    exit()
+                    sys.exit(1)
                 if type(self.template_cfg['advanced'][i][j]) != str:
                     add_log("模板 %s 节点数据类型有误，当前类型为： %s ，应该为： %s" % ('advanced.' + i + '.' + j, type(self.template_cfg['advanced'][i][j]), str), 'Error', debug_info())
-                    exit()
+                    sys.exit(1)
         add_log("检查是否引用了不存在的定位器、常量或变量", 'Debug', debug_info())
         traverse_res = traverse_dict(self.template_cfg)
         for i in traverse_res:
@@ -325,13 +326,13 @@ class Service:
                     str_include = list_template_string_include(i[j], self.template_delimiter_map[k], True)
                     if str_include != [] and not set(str_include).issubset(set(self.template_cfg['advanced'][k])):
                         add_log("模板 %s 节点引用了不存在的定位器、常量或变量： %s" % (i[2], json_encode(list(set(str_include) - set(self.template_cfg['advanced'][k])))), 'Error', debug_info())
-                        exit()
+                        sys.exit(1)
         add_log("检查是否存在死循环引用或受引用控制策略限制", 'Debug', debug_info())
         for i in traverse_res:
             detect_res = detect_template_include_loop(self.template_cfg['advanced'], {i[0]: i[1]}, self.template_delimiter_map, True)
             if detect_res == True:
                 add_log("在模板 %s 节点上检查到了死循环引用" % i[2], 'Error', debug_info())
-                exit()
+                sys.exit(1)
             else:
                 acl_check_seq = ["_root"] + i[3]
                 acl_position = deepcopy(self.template_acl)
@@ -357,11 +358,11 @@ class Service:
                 for j in detect_res['k']:
                     if len(detect_res['k'][j]) != 0 and acl_rule['key'][j] != True:
                         add_log("根据模板引用策略，以下定位器、常量或变量不能在模板 %s 节点上引用： %s ，引用策略对此节点的限制为： %s" % (i[2], json_encode(detect_res['k'][j]), json_encode(acl_rule['key'])), 'Error', debug_info())
-                        exit()
+                        sys.exit(1)
                 for j in detect_res['v']:
                     if len(detect_res['v'][j]) != 0 and acl_rule['value'][j] != True:
                         add_log("根据模板引用策略，以下定位器、常量或变量不能在模板 %s 节点上引用： %s ，引用策略对此节点的限制为： %s" % (i[2], json_encode(detect_res['v'][j]), json_encode(acl_rule['value'])), 'Error', debug_info())
-                        exit()
+                        sys.exit(1)
         add_log("添加运行时内部变量", 'Debug', debug_info())
         self.template_cfg['advanced'].update({'runtime': {'scrap_result': '', 'template_name': self.template}})
         add_log("更新预设变量", 'Debug', debug_info())
